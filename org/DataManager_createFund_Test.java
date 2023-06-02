@@ -60,7 +60,7 @@ public class DataManager_createFund_Test {
 	}
 
 	@Test
-	public void testExeception() {
+	public void testException() {
 
 		DataManager dm = new DataManager(new WebClient("localhost", 3001) {
 
