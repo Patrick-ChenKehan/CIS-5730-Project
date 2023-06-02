@@ -46,17 +46,13 @@ public class DataManager_createFund_Test {
 
 			@Override
 			public String makeRequest(String resource, Map<String, Object> queryParams) {
-				return "{\"status\":\"failure\",\"data\":{\"_id\":\"12345\",\"name\":\"new fund\",\"description\":\"this is the new fund\",\"target\":10000,\"org\":\"5678\",\"donations\":[],\"__v\":0}}";
-
+				return "{\"status\":\"error\",\"data\":{\"name\":\"MongoError\"}}";
 			}
 
 		});
 
-
 		Fund f = dm.createFund("12345", "new fund", "this is the new fund", 10000);
-
 		assertNull(f);
-
 	}
 
 	@Test

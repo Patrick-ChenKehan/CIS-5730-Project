@@ -28,7 +28,7 @@ public class DataManager_attemptLogin_Test {
                         "{\"target\":5000," +
                         "\"_id\":\"6479e450e99150cda7f6dd6f\",\"name\":\"Philan\",\"description\":\"Children Fund\"," +
                         "\"org\":\"6479e41ce99150cda7f6dd6c\",\"donations\":[],\"__v\":0}" + "],\"__v\":0}}";
-            };
+            }
 
         });
         Organization org = dm.attemptLogin("Patrick", "1020");
@@ -45,12 +45,24 @@ public class DataManager_attemptLogin_Test {
         DataManager dm = new DataManager(new WebClient("localhost", 3001) {
             @Override
             public String makeRequest(String resource, Map<String, Object> queryParams) {
-                return "{\"status\":\"fail\",\"data\":{}}";
+                return "{\"status\":\"error\",\"data\":{\"name\":\"MongoError\"}}";
+            }
+
+        });
+        Organization org = dm.attemptLogin("Patrick", "1020f");
+        assertNull(org);
+    }
+
+    @Test (expected = IllegalStateException.class)
+    public void testFailedConnection() {
+        DataManager dm = new DataManager(new WebClient("localhost", 3001) {
+            @Override
+            public String makeRequest(String resource, Map<String, Object> queryParams) {
+                return null;
             }
 
         });
         Organization org = dm.attemptLogin("Patrick", "1020");
-        assertNull(org);
     }
 }
 

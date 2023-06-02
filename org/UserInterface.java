@@ -30,8 +30,16 @@ public class UserInterface {
 				System.out.println("Enter the fund number to see more information.");
 			}
 			System.out.println("Enter 0 to create a new fund");
-			int option = in.nextInt();
-			in.nextLine();
+
+			// handle invalid option
+			String option_str = in.nextLine().trim();
+			while (!(option_str.matches("\\d+") && Integer.parseInt(option_str) < org.getFunds().size())) {
+				System.out.print("Option invalid. Please re-enter your option: ");
+				option_str = in.nextLine().trim();
+			}
+			int option = Integer.parseInt(option_str);
+
+
 			if (option == 0) {
 				createFund(); 
 			}
@@ -43,16 +51,25 @@ public class UserInterface {
 	}
 	
 	public void createFund() {
-		
+
 		System.out.print("Enter the fund name: ");
 		String name = in.nextLine().trim();
+
+		while (name.isEmpty()) { // Task 1.7
+			System.out.print("Name cannot be null. Please re-enter the fund name: ");
+			name = in.nextLine().trim();
+		}
 		
 		System.out.print("Enter the fund description: ");
 		String description = in.nextLine().trim();
 		
 		System.out.print("Enter the fund target: ");
-		long target = in.nextInt();
-		in.nextLine();
+		String target_str = in.nextLine().trim();
+		while (!target_str.matches("-?\\d+(\\.\\d+)?")) {
+			System.out.print("Target should be a number. Please re-enter the target: ");
+			target_str = in.nextLine().trim();
+		}
+		long target = Integer.parseInt(target_str);
 
 		Fund fund = dataManager.createFund(org.getId(), name, description, target);
 		org.getFunds().add(fund);
@@ -94,17 +111,20 @@ public class UserInterface {
 		String password = args[1];
 		
 		
-		Organization org = ds.attemptLogin(login, password);
-		
-		if (org == null) {
-			System.out.println("Login failed.");
-		}
-		else {
+		try {
+			Organization org = ds.attemptLogin(login, password);
 
-			UserInterface ui = new UserInterface(ds, org);
-		
-			ui.start();
-		
+			if (org == null) {
+				System.out.println("Login failed.");
+			} else {
+
+				UserInterface ui = new UserInterface(ds, org);
+
+				ui.start();
+
+			}
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
 		}
 	}
 

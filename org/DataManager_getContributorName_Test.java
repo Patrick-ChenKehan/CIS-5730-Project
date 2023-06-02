@@ -3,7 +3,7 @@ import org.junit.Test;
 import java.util.Map;
 import static org.junit.Assert.*;
 
-public class testGetContributorName {
+public class DataManager_getContributorName_Test {
     @Test
     public void test1(){
         DataManager dm = new DataManager(new WebClient("localhost", 3001) {
