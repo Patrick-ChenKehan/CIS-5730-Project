@@ -39,5 +39,18 @@ public class DataManager_attemptLogin_Test {
         assertEquals(2, org.getFunds().size());
 
     }
+
+    @Test
+    public void testFailedLogin() {
+        DataManager dm = new DataManager(new WebClient("localhost", 3001) {
+            @Override
+            public String makeRequest(String resource, Map<String, Object> queryParams) {
+                return "{\"status\":\"fail\",\"data\":{}}";
+            }
+
+        });
+        Organization org = dm.attemptLogin("Patrick", "1020");
+        assertNull(org);
+    }
 }
 
