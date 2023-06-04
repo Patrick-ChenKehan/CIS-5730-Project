@@ -89,7 +89,7 @@ public class UserInterface {
 
         List<Donation> donations = fund.getDonations();
         System.out.println("Number of donations: " + donations.size());
-        long totalAmount = 0;
+        double totalAmount = 0;
         double percent = 0.0;
         for (Donation donation : donations) {
             String origDate = donation.getDate();
