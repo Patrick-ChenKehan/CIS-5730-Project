@@ -93,7 +93,18 @@ public class UserInterface {
 		long totalAmount = 0;
 		double percent = 0.0;
 		for (Donation donation : donations) {
-			System.out.println("* " + donation.getContributorName() + ": $" + donation.getAmount() + " on " + donation.getDate());
+			String origDate = donation.getDate();
+			String year = origDate.substring(0, 4).trim();
+			String month = origDate.substring(5, 7).trim();
+			String date = origDate.substring(8, 10).trim();
+			// task 1.9
+			if (month.equals("01")) {month = "January";} else if (month.equals("02")) {month = "February";}
+			else if (month.equals("03")) {month = "March";} else if (month.equals("04")) {month = "April";}
+			else if (month.equals("05")) {month = "May";} else if (month.equals("06")) { month = "June";}
+			else if (month.equals("07")) {month = "July";} else if (month.equals("08")) {month = "August";}
+			else if (month.equals("09")) {month = "September";} else if (month.equals("10")) {month = "October";}
+			else if (month.equals("11")) {month = "November";} else if (month.equals("12")) {month = "December";}
+			System.out.println("* " + donation.getContributorName() + ": $" + donation.getAmount() + " on " + month + " " + date + ", " + year);
 			totalAmount += donation.getAmount();
 		}
 		// task 1.3
