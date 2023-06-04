@@ -64,11 +64,11 @@ public class UserInterface {
 
         System.out.print("Enter the fund target: ");
         String target_str = in.nextLine().trim();
-        while (!target_str.matches("-?\\d+(\\.\\d+)?")) {
+        while (!target_str.matches("-?\\d+(\\.\\d+)?")) { // TODO: whether to accept decimal number target
             System.out.print("Target should be a number. Please re-enter the target: ");
             target_str = in.nextLine().trim();
         }
-        long target = Integer.parseInt(target_str);
+        long target = (long)Double.parseDouble(target_str);;
 
         Fund fund = dataManager.createFund(org.getId(), name, description, target);
         org.getFunds().add(fund);
