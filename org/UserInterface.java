@@ -33,10 +33,10 @@ public class UserInterface {
 
 			// handle invalid option
 			String option_str = in.nextLine().trim();
-			while (!(option_str.matches("\\d+") && Integer.parseInt(option_str) < org.getFunds().size())) {
-				System.out.print("Option invalid. Please re-enter your option: ");
-				option_str = in.nextLine().trim();
-			}
+//			while (!(option_str.matches("\\d+") && Integer.parseInt(option_str) < org.getFunds().size())) {
+//				System.out.print("Option invalid. Please re-enter your option: ");
+//				option_str = in.nextLine().trim();
+//			}
 			int option = Integer.parseInt(option_str);
 
 
@@ -90,16 +90,23 @@ public class UserInterface {
 		
 		List<Donation> donations = fund.getDonations();
 		System.out.println("Number of donations: " + donations.size());
+		long totalAmount = 0;
+		double percent = 0.0;
 		for (Donation donation : donations) {
 			System.out.println("* " + donation.getContributorName() + ": $" + donation.getAmount() + " on " + donation.getDate());
+			totalAmount += donation.getAmount();
 		}
+		// task 1.3
+		percent = totalAmount/fund.getTarget() * 100;
+		percent = ((double)((int)(percent *100.0)))/100.0; // trim to two decimal places
+		if (percent >= 100.00){
+			percent = 100.00;
+		}
+		System.out.println("Total donation amount: $" + totalAmount + " (" + percent + "% of target)");
 	
 		
 		System.out.println("Press the Enter key to go back to the listing of funds");
 		in.nextLine();
-		
-		
-		
 	}
 	
 	
