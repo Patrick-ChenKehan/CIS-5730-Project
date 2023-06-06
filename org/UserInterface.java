@@ -65,7 +65,7 @@ public class UserInterface {
             System.out.print("Target should be a number. Please re-enter the target: ");
             target_str = in.nextLine().trim();
         }
-        long target = (long)Double.parseDouble(target_str);;
+        long target = (long)Double.parseDouble(target_str);
 
         Fund fund = dataManager.createFund(org.getId(), name, description, target);
         org.getFunds().add(fund);
@@ -145,7 +145,7 @@ public class UserInterface {
             login = args[0];
             password = args[1];
         } catch (ArrayIndexOutOfBoundsException e){
-            System.out.println("Login fails");
+            System.out.println("Credentials invalid/unprovided");
             return;
         }
 
