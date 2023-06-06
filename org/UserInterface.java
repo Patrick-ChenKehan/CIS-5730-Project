@@ -14,21 +14,20 @@ public class UserInterface {
     }
 
     public void start() {
-
         while (true) {
             System.out.println("\n\n");
-            if (org.getFunds().size() > 0) {
-                System.out.println("There are " + org.getFunds().size() + " funds in this organization:");
 
+            if (org.getFunds().size() > 0) {
+
+                System.out.println("There are " + org.getFunds().size() + " funds in this organization:");
                 int count = 1;
                 for (Fund f : org.getFunds()) {
-
                     System.out.println(count + ": " + f.getName());
-
                     count++;
                 }
                 System.out.println("Enter the fund number to see more information.");
             }
+
             System.out.println("Enter 0 to create a new fund");
 
             // handle invalid option
@@ -39,14 +38,12 @@ public class UserInterface {
             }
             int option = Integer.parseInt(option_str);
 
-
             if (option == 0) {
                 createFund();
             } else {
                 displayFund(option);
             }
         }
-
     }
 
     public void createFund() {
@@ -64,7 +61,7 @@ public class UserInterface {
 
         System.out.print("Enter the fund target: ");
         String target_str = in.nextLine().trim();
-        while (!target_str.matches("-?\\d+(\\.\\d+)?")) { // TODO: whether to accept decimal number target
+        while (!target_str.matches("-?\\d+(\\.\\d+)?")) {
             System.out.print("Target should be a number. Please re-enter the target: ");
             target_str = in.nextLine().trim();
         }
@@ -72,7 +69,6 @@ public class UserInterface {
 
         Fund fund = dataManager.createFund(org.getId(), name, description, target);
         org.getFunds().add(fund);
-
 
     }
 
@@ -121,6 +117,8 @@ public class UserInterface {
                 month = "November";
             } else if (month.equals("12")) {
                 month = "December";
+            } else {
+                month = "Invalid month";
             }
             System.out.println("* " + donation.getContributorName() + ": $" + donation.getAmount() + " on " + month + " " + date + ", " + year);
             totalAmount += donation.getAmount();
@@ -133,7 +131,6 @@ public class UserInterface {
         }
         System.out.println("Total donation amount: $" + totalAmount + " (" + percent + "% of target)");
 
-
         System.out.println("Press the Enter key to go back to the listing of funds");
         in.nextLine();
     }
@@ -142,22 +139,23 @@ public class UserInterface {
     public static void main(String[] args) {
 
         DataManager ds = new DataManager(new WebClient("localhost", 3001));
-
-        String login = args[0];
-        String password = args[1];
-
+        String login ;
+        String password;
+        try {
+            login = args[0];
+            password = args[1];
+        } catch (ArrayIndexOutOfBoundsException e){
+            System.out.println("Login fails");
+            return;
+        }
 
         try {
             Organization org = ds.attemptLogin(login, password);
-
             if (org == null) {
-                System.out.println("Login failed.");
+                System.out.println("Login fails");
             } else {
-
                 UserInterface ui = new UserInterface(ds, org);
-
                 ui.start();
-
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
