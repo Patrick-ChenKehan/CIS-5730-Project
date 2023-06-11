@@ -13,6 +13,40 @@ public class UserInterface {
         this.org = org;
     }
 
+    public void logout() {
+        org = null; // Reset the organization
+        System.out.println("Logged out successfully.");
+        System.out.println("Please log in to continue.");
+        login();
+    }
+
+    public void login() {
+
+        boolean loggedIn = false;
+        while(!loggedIn) {
+            System.out.print("Enter your login: ");
+            String login = in.nextLine().trim();
+
+            System.out.print("Enter your password: ");
+            String password = in.nextLine().trim();
+
+
+            try {
+                Organization newOrg = dataManager.attemptLogin(login, password);
+                if (newOrg == null) {
+                    System.out.println("Login fails");
+
+                }else {
+                    org = newOrg;
+                    System.out.println("Login successful.");
+                    loggedIn = true;
+                }
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+
     public void start() {
         while (true) {
             System.out.println("\n\n");
@@ -29,10 +63,11 @@ public class UserInterface {
             }
 
             System.out.println("Enter 0 to create a new fund");
+            System.out.println("Enter -1 to log out");
 
             // handle invalid option
             String option_str = in.nextLine().trim();
-            while (!(option_str.matches("\\d+") && Integer.parseInt(option_str) <= org.getFunds().size())) {
+            while (!( (option_str.matches("\\d+") && Integer.parseInt(option_str) <= org.getFunds().size() )  || (option_str.matches("-1")) )) {
                 System.out.print("Option invalid. Please re-enter your option: ");
                 option_str = in.nextLine().trim();
             }
@@ -40,7 +75,10 @@ public class UserInterface {
 
             if (option == 0) {
                 createFund();
-            } else {
+            }  else if(option == -1){
+                logout();
+            }
+            else {
                 displayFund(option);
             }
         }

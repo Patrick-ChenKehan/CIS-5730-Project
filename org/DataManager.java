@@ -17,6 +17,8 @@ public class DataManager {
 		this.client = client;
 	}
 
+	private  Map<String, String> results = new HashMap<>();
+
 	/**
 	 * Attempt to log the user into an Organization account using the login and password.
 	 * This method uses the /findOrgByLoginAndPassword endpoint in the API
@@ -47,7 +49,7 @@ public class DataManager {
 				JSONArray funds = (JSONArray)data.get("funds");
 				Iterator it = funds.iterator();
 				while(it.hasNext()){
-					JSONObject fund = (JSONObject) it.next(); 
+					JSONObject fund = (JSONObject) it.next();
 					fundId = (String)fund.get("_id");
 					name = (String)fund.get("name");
 					description = (String)fund.get("description");
@@ -91,26 +93,31 @@ public class DataManager {
 	public String getContributorName(String id) {
 
 		try {
+			if (results.containsKey(id)) {
+				return results.get(id);
+			}else {
+				try {
 
-			Map<String, Object> map = new HashMap<>();
-			map.put("id", id);
-			String response = client.makeRequest("/findContributorNameById", map);
 
-			JSONParser parser = new JSONParser();
-			JSONObject json = (JSONObject) parser.parse(response);
-			String status = (String)json.get("status");
+					Map<String, Object> map = new HashMap<>();
+					map.put("id", id);
+					String response = client.makeRequest("/findContributorNameById", map);
 
-			if (status.equals("success")) {
-				String name = (String)json.get("data");
-				return name;
+					JSONParser parser = new JSONParser();
+					JSONObject json = (JSONObject) parser.parse(response);
+					String status = (String) json.get("status");
+
+					if (status.equals("success")) {
+						String name = (String) json.get("data");
+						results.put(id, name);
+						return name;
+					} else return null;
+
+
+				} catch (Exception e) {
+					return null;
+				}
 			}
-			else return null;
-
-
-		}
-		catch (Exception e) {
-			return null;
-		}	
 	}
 
 	/**
@@ -143,7 +150,7 @@ public class DataManager {
 		catch (Exception e) {
 			e.printStackTrace();
 			return null;
-		}	
+		}
 	}
 
 
