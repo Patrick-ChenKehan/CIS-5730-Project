@@ -68,7 +68,9 @@ public class UserInterface {
 
             // handle invalid option
             String option_str = in.nextLine().trim();
-            while (!( (option_str.matches("\\d+") && Integer.parseInt(option_str) <= org.getFunds().size() )  || (option_str.matches("-1")) )) {
+            while (!((option_str.matches("-?\\d+") &&
+                    Integer.parseInt(option_str) <= org.getFunds().size() &&
+                    Integer.parseInt(option_str) >= -1))) {
                 System.out.print("Option invalid. Please re-enter your option: ");
                 option_str = in.nextLine().trim();
             }
@@ -76,10 +78,9 @@ public class UserInterface {
 
             if (option == 0) {
                 createFund();
-            }  else if(option == -1){
+            } else if (option == -1) {
                 logout();
-            }
-            else {
+            } else {
                 displayFund(option);
             }
         }
@@ -109,6 +110,25 @@ public class UserInterface {
         Fund fund = dataManager.createFund(org.getId(), name, description, target);
         org.getFunds().add(fund);
 
+    }
+
+    public void deleteFund(int fundNumber) {
+        System.out.println("Are you sure you want to delete fund " + fundNumber +"? (y/n)");
+        String choice = in.nextLine();
+        while (!choice.equals("y") && !choice.equals("n")) {
+            System.out.println("Choice invalid. Are you sure you want to delete fund " + fundNumber +"? (y/n)");
+            choice = in.nextLine();
+        }
+        if (choice.equals("n")) {
+            System.out.println("Deletion canceled for fund "+ fundNumber);
+        } else if (choice.equals("y")) {
+            try {
+                dataManager.deleteFund(org.getFunds().get(fundNumber - 1).getId());
+                org.deleteFund(fundNumber);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 
@@ -188,19 +208,30 @@ public class UserInterface {
             percent = 100.00;
         }
         System.out.println("Total donation amount: $" + totalAmount + " (" + percent + "% of target)");
+        String choice;
         if (verbose) {
-            System.out.println("Enter \"Agg\" to see contributor summary or Press the Enter key to go back to the listing of funds");
-            if (in.nextLine().trim().equals("Agg")) {
+            System.out.println("*Enter \"Agg\" to see contributor summary \n" +
+                    "*Enter \"Delete\" to delete the fund\n" +
+                    "*Enter any other to go back to the listing of funds");
+            choice = in.nextLine().trim();
+            if (choice.equals("Agg")) {
                 verbose = false;
                 System.out.println("Donation display changed to aggregated");
             }
         } else {
-            System.out.println("Enter \"Verbose\" to see donation details or Press the Enter key to go back to the listing of funds");
-            if (in.nextLine().trim().equals("Verbose")) {
+            System.out.println("*Enter \"Verbose\" to see contributor summary \n" +
+                    "*Enter \"Delete\" to delete the fund\n" +
+                    "*Enter any other to go back to the listing of funds");
+            choice = in.nextLine().trim();
+            if (choice.equals("Verbose")) {
                 verbose = true;
                 System.out.println("Donation display changed to verbose");
             }
         }
+
+        if (choice.equals("Delete"))
+            deleteFund(fundNumber);
+
     }
 
 

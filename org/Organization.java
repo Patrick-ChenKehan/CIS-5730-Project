@@ -35,6 +35,10 @@ public class Organization {
 	public void addFund(Fund fund) {
 		funds.add(fund);
 	}
+
+	public void deleteFund(int fundNumber) {
+		funds.remove(fundNumber - 1);
+	}
 	
 
 }

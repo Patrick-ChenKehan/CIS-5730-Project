@@ -154,5 +154,30 @@ public class DataManager {
 		}
 	}
 
+	public void deleteFund(String fundID) {
+		try {
+
+			Map<String, Object> map = new HashMap<>();
+			map.put("id", fundID);
+
+			String response = client.makeRequest("/deleteFund", map);
+
+			if (response == null) // Handle failed connection
+				throw new IllegalStateException("Error in communicating with server");
+
+			JSONParser parser = new JSONParser();
+			JSONObject json = (JSONObject) parser.parse(response);
+			String status = (String)json.get("status");
+
+			if (status.equals("error")) {
+				throw new IllegalStateException("Deletion failed");
+			}
+
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			throw new IllegalStateException(e.getMessage());
+		}
+	}
 
 }
