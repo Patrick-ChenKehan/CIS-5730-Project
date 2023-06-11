@@ -1,3 +1,5 @@
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 
@@ -7,6 +9,8 @@ public class UserInterface {
     private DataManager dataManager;
     private Organization org;
     private Scanner in = new Scanner(System.in);
+
+    private boolean verbose = true;
 
     public UserInterface(DataManager dataManager, Organization org) {
         this.dataManager = dataManager;
@@ -122,44 +126,56 @@ public class UserInterface {
         System.out.println("Target: $" + fund.getTarget());
 
         List<Donation> donations = fund.getDonations();
+        donations.sort((d1, d2) -> (int) d2.getAmount() - (int) d1.getAmount());
         System.out.println("Number of donations: " + donations.size());
         double totalAmount = 0;
         double percent = 0.0;
-        for (Donation donation : donations) {
-            String origDate = donation.getDate();
-            String year = origDate.substring(0, 4).trim();
-            String month = origDate.substring(5, 7).trim();
-            String date = origDate.substring(8, 10).trim();
-            // task 1.9
-            if (month.equals("01")) {
-                month = "January";
-            } else if (month.equals("02")) {
-                month = "February";
-            } else if (month.equals("03")) {
-                month = "March";
-            } else if (month.equals("04")) {
-                month = "April";
-            } else if (month.equals("05")) {
-                month = "May";
-            } else if (month.equals("06")) {
-                month = "June";
-            } else if (month.equals("07")) {
-                month = "July";
-            } else if (month.equals("08")) {
-                month = "August";
-            } else if (month.equals("09")) {
-                month = "September";
-            } else if (month.equals("10")) {
-                month = "October";
-            } else if (month.equals("11")) {
-                month = "November";
-            } else if (month.equals("12")) {
-                month = "December";
-            } else {
-                month = "Invalid month";
+        if (verbose) {
+            for (Donation donation : donations) {
+                String origDate = donation.getDate();
+                String year = origDate.substring(0, 4).trim();
+                String month = origDate.substring(5, 7).trim();
+                String date = origDate.substring(8, 10).trim();
+                // task 1.9
+                if (month.equals("01")) {
+                    month = "January";
+                } else if (month.equals("02")) {
+                    month = "February";
+                } else if (month.equals("03")) {
+                    month = "March";
+                } else if (month.equals("04")) {
+                    month = "April";
+                } else if (month.equals("05")) {
+                    month = "May";
+                } else if (month.equals("06")) {
+                    month = "June";
+                } else if (month.equals("07")) {
+                    month = "July";
+                } else if (month.equals("08")) {
+                    month = "August";
+                } else if (month.equals("09")) {
+                    month = "September";
+                } else if (month.equals("10")) {
+                    month = "October";
+                } else if (month.equals("11")) {
+                    month = "November";
+                } else if (month.equals("12")) {
+                    month = "December";
+                } else {
+                    month = "Invalid month";
+                }
+                System.out.println("* " + donation.getContributorName() + ": $" + donation.getAmount() + " on " + month + " " + date + ", " + year);
+                totalAmount += donation.getAmount();
             }
-            System.out.println("* " + donation.getContributorName() + ": $" + donation.getAmount() + " on " + month + " " + date + ", " + year);
-            totalAmount += donation.getAmount();
+        } else {
+            HashMap<String, Integer> aggregated_donation_number = fund.getAggregatedDonationNumber();
+            HashMap<String, Long> aggregated_donation_amount = fund.getAggregatedDonationAmount();
+            for (String contributorName: fund.getContributors()) {
+                int num_donations = aggregated_donation_number.getOrDefault(contributorName, 0);
+                long amount_donations = aggregated_donation_amount.getOrDefault(contributorName, 0L);
+                totalAmount += (double)amount_donations;
+                System.out.println("* " + contributorName + ", " + num_donations + " donations, $" + amount_donations + " total");
+            }
         }
         // task 1.3
         percent = totalAmount / fund.getTarget() * 100;
@@ -168,9 +184,19 @@ public class UserInterface {
             percent = 100.00;
         }
         System.out.println("Total donation amount: $" + totalAmount + " (" + percent + "% of target)");
-
-        System.out.println("Press the Enter key to go back to the listing of funds");
-        in.nextLine();
+        if (verbose) {
+            System.out.println("Enter \"Agg\" to see contributor summary or Press the Enter key to go back to the listing of funds");
+            if (in.nextLine().trim().equals("Agg")) {
+                verbose = false;
+                System.out.println("Donation display changed to aggregated");
+            }
+        } else {
+            System.out.println("Enter \"Verbose\" to see donation details or Press the Enter key to go back to the listing of funds");
+            if (in.nextLine().trim().equals("Verbose")) {
+                verbose = true;
+                System.out.println("Donation display changed to verbose");
+            }
+        }
     }
 
 
