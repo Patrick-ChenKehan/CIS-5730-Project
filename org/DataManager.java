@@ -95,29 +95,30 @@ public class DataManager {
 		try {
 			if (results.containsKey(id)) {
 				return results.get(id);
-			}else {
-				try {
+			} else {
 
 
-					Map<String, Object> map = new HashMap<>();
-					map.put("id", id);
-					String response = client.makeRequest("/findContributorNameById", map);
+				Map<String, Object> map = new HashMap<>();
+				map.put("id", id);
+				String response = client.makeRequest("/findContributorNameById", map);
 
-					JSONParser parser = new JSONParser();
-					JSONObject json = (JSONObject) parser.parse(response);
-					String status = (String) json.get("status");
+				JSONParser parser = new JSONParser();
+				JSONObject json = (JSONObject) parser.parse(response);
+				String status = (String) json.get("status");
 
-					if (status.equals("success")) {
-						String name = (String) json.get("data");
-						results.put(id, name);
-						return name;
-					} else return null;
+				if (status.equals("success")) {
+					String name = (String) json.get("data");
+					results.put(id, name);
+					return name;
+				} else return null;
 
 
-				} catch (Exception e) {
-					return null;
-				}
 			}
+		}
+
+		catch (Exception e) {
+			return null;
+		}
 	}
 
 	/**
