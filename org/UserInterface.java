@@ -1,7 +1,4 @@
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class UserInterface {
 
@@ -126,12 +123,12 @@ public class UserInterface {
         System.out.println("Target: $" + fund.getTarget());
 
         List<Donation> donations = fund.getDonations();
-        donations.sort((d1, d2) -> (int) d2.getAmount() - (int) d1.getAmount());
         System.out.println("Number of donations: " + donations.size());
         double totalAmount = 0;
         double percent = 0.0;
-        if (verbose) {
+        if (verbose) { // If in verbose mode
             for (Donation donation : donations) {
+                donations.sort((d1, d2) -> (int) d2.getAmount() - (int) d1.getAmount()); // Sort donations in descending order
                 String origDate = donation.getDate();
                 String year = origDate.substring(0, 4).trim();
                 String month = origDate.substring(5, 7).trim();
@@ -167,13 +164,20 @@ public class UserInterface {
                 System.out.println("* " + donation.getContributorName() + ": $" + donation.getAmount() + " on " + month + " " + date + ", " + year);
                 totalAmount += donation.getAmount();
             }
-        } else {
+        } else { // If in aggregated mode
             HashMap<String, Integer> aggregated_donation_number = fund.getAggregatedDonationNumber();
             HashMap<String, Long> aggregated_donation_amount = fund.getAggregatedDonationAmount();
-            for (String contributorName: fund.getContributors()) {
+
+            List<String> contributors = new ArrayList<>(aggregated_donation_amount.keySet());
+            // Sort contributors in descending order
+            contributors.sort((n1, n2) ->
+                    aggregated_donation_amount.getOrDefault(n2, 0L).intValue() -
+                            aggregated_donation_amount.getOrDefault(n1, 0L).intValue());
+
+            for (String contributorName: contributors) {
                 int num_donations = aggregated_donation_number.getOrDefault(contributorName, 0);
                 long amount_donations = aggregated_donation_amount.getOrDefault(contributorName, 0L);
-                totalAmount += (double)amount_donations;
+                totalAmount += (double)amount_donations; // update total amount
                 System.out.println("* " + contributorName + ", " + num_donations + " donations, $" + amount_donations + " total");
             }
         }

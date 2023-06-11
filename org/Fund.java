@@ -8,9 +8,9 @@ public class Fund {
 	private long target;
 	private List<Donation> donations;
 
+	// Used for aggregated donations and order
 	private HashMap<String, Integer> aggregated_donation_number;
 	private HashMap<String, Long> aggregated_donation_amount;
-	private List<String> contributors = new ArrayList<>();
 	
 	public Fund(String id, String name, String description, long target) {
 		this.id = id;
@@ -31,12 +31,6 @@ public class Fund {
 			aggregated_donation_amount.put(contributorName,
 					aggregated_donation_amount.getOrDefault(contributorName, 0L) + donation.getAmount());
 		}
-
-		contributors = new ArrayList<>(aggregated_donation_amount.keySet());
-		contributors.sort((n1, n2) ->
-				aggregated_donation_amount.getOrDefault(n2, 0L).intValue() -
-						aggregated_donation_amount.getOrDefault(n1, 0L).intValue());
-
 	}
 
 	public String getId() {
@@ -57,15 +51,12 @@ public class Fund {
 
 	public void setDonations(List<Donation> donations) {
 		this.donations = donations;
+		// Calculate aggregated donations and store
 		this.setAggregatedDonations();
 	}
 	
 	public List<Donation> getDonations() {
 		return donations;
-	}
-
-	public List<String> getContributors() {
-		return contributors;
 	}
 
 	public HashMap<String, Integer> getAggregatedDonationNumber() {
