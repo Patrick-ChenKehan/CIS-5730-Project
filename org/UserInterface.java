@@ -101,7 +101,7 @@ public class UserInterface {
 
         System.out.print("Enter the fund target: ");
         String target_str = in.nextLine().trim();
-        while (!target_str.matches("-?\\d+(\\.\\d+)?")) {
+        while (!target_str.matches("\\d+(\\.\\d+)?")) {
             System.out.print("Target should be a number. Please re-enter the target: ");
             target_str = in.nextLine().trim();
         }
