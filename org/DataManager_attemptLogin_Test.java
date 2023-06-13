@@ -40,7 +40,7 @@ public class DataManager_attemptLogin_Test {
 
     }
 
-    @Test
+    @Test(expected=IllegalStateException.class)
     public void testFailedLogin() {
         DataManager dm = new DataManager(new WebClient("localhost", 3001) {
             @Override
@@ -50,7 +50,6 @@ public class DataManager_attemptLogin_Test {
 
         });
         Organization org = dm.attemptLogin("Patrick", "1020f");
-        assertNull(org);
     }
 
     @Test (expected = IllegalStateException.class)
