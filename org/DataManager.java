@@ -26,16 +26,16 @@ public class DataManager {
 	 */
 	public Organization attemptLogin(String login, String password) {
 		if (login == null){
-			throw new IllegalArgumentException("Null login: Please reenter credentials");
+			throw new IllegalArgumentException("Please reenter credentials: null login");
 		}
 		if (password == null){
-			throw new IllegalArgumentException("Null password: Please reenter credentials");
+			throw new IllegalArgumentException("Please reenter credentials: null password");
 		}
 			Map<String, Object> map = new HashMap<>();
 			map.put("login", login);
 			map.put("password", password);
 			if (client == null){
-				throw new IllegalStateException("Error in logging in: Webclient is null");
+				throw new IllegalStateException("Error while logging in: Webclient is null");
 			}
 			String response = client.makeRequest("/findOrgByLoginAndPassword", map);
 
@@ -47,7 +47,7 @@ public class DataManager {
 			try {
 				json = (JSONObject) parser.parse(response);
 			} catch (Exception e){
-				throw new IllegalStateException("Error in logging in");
+				throw new IllegalStateException("Error while logging in");
 			}
 			String status = (String)json.get("status");
 
@@ -143,13 +143,13 @@ public class DataManager {
 	 */
 	public Fund createFund(String orgId, String name, String description, long target) {
 			if (orgId == null){
-				throw new IllegalArgumentException("OrgID is null");
+				throw new IllegalArgumentException("Invalid input: OrgID was null");
 			}
 			if (name == null){
-				throw new IllegalArgumentException("name is null");
+				throw new IllegalArgumentException("Invalid input: name was null");
 			}
 			if (description == null){
-				throw new IllegalArgumentException("description is null");
+				throw new IllegalArgumentException("Invalid input: description is null");
 			}
 
 			Map<String, Object> map = new HashMap<>();
@@ -170,7 +170,7 @@ public class DataManager {
 			try {
 				json = (JSONObject) parser.parse(response);
 			} catch (Exception e){
-				throw new IllegalStateException("Error in creating fund");
+				throw new IllegalStateException("Error while creating fund");
 			}
 			String status = (String)json.get("status");
 
@@ -179,7 +179,7 @@ public class DataManager {
 				String fundId = (String)fund.get("_id");
 				return new Fund(fundId, name, description, target);
 			}
-			else throw new IllegalStateException("createFund failed. Please try creating fund again");
+			else throw new IllegalStateException("Creating fund failed. Please try creating fund again");
 
 
 	}
