@@ -329,10 +329,12 @@ public class UserInterface {
             org = ds.attemptLogin(login, password);
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
-            System.out.println("Re-input correct credentials as runtime args");
+            System.out.println("One or more credentials are invalid. Please try again with new runtime arguments");
+            return;
         } catch (IllegalStateException e){
             System.out.println(e.getMessage());
-            System.out.println("System error. Try again.");
+            System.out.println("Credentials not found. Please try again with new runtime arguments.");
+            return;
         }
 
         try {
