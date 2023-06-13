@@ -21,7 +21,7 @@ public class DataManager_getContributorName_Test {
         assertEquals(name,"wj");
     }
 
-    @Test
+    @Test(expected=IllegalStateException.class)
     public void testNotSuccess(){
         DataManager dm = new DataManager(new WebClient("localhost", 3001) {
 
@@ -34,10 +34,9 @@ public class DataManager_getContributorName_Test {
         });
 
         String name  = dm.getContributorName("12345");
-        assertNull(name);
     }
 
-    @Test
+    @Test(expected=IllegalStateException.class)
     public void testException(){
         DataManager dm = new DataManager(new WebClient("localhost", 3001) {
 
@@ -50,6 +49,5 @@ public class DataManager_getContributorName_Test {
         });
 
         String name  = dm.getContributorName("12346");
-        assertNull(name);
     }
 }
