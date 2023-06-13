@@ -135,45 +135,58 @@ public class UserInterface {
     public void displayAllContributions() {
         System.out.println("All donations are ranked by decreasing order of time. \n" +
                 "The contributions for the funds in this organization are as follows: ");
+        List<List<String>> allContributions = new ArrayList<>();
         List<Fund> allFunds = org.getFunds();
         for (Fund fund: allFunds) {
+            List<String> fundInfo = new ArrayList<>();
             String fundName = fund.getName();
             List<Donation> donations = fund.getDonations();
-            Collections.sort(donations, (d1, d2) -> d1.getDate().compareTo(d2.getDate()));
-            for (Donation donation : donations) {
-                String origDate = donation.getDate();
-                String year = origDate.substring(0, 4).trim();
-                String month = origDate.substring(5, 7).trim();
-                String date = origDate.substring(8, 10).trim();
-                if (month.equals("01")) {
-                    month = "January";
-                } else if (month.equals("02")) {
-                    month = "February";
-                } else if (month.equals("03")) {
-                    month = "March";
-                } else if (month.equals("04")) {
-                    month = "April";
-                } else if (month.equals("05")) {
-                    month = "May";
-                } else if (month.equals("06")) {
-                    month = "June";
-                } else if (month.equals("07")) {
-                    month = "July";
-                } else if (month.equals("08")) {
-                    month = "August";
-                } else if (month.equals("09")) {
-                    month = "September";
-                } else if (month.equals("10")) {
-                    month = "October";
-                } else if (month.equals("11")) {
-                    month = "November";
-                } else if (month.equals("12")) {
-                    month = "December";
-                } else {
-                    month = "Invalid month";
-                }
-                System.out.println("* Fund: " + fundName + " -> $" + donation.getAmount() + " on " + month + " " + date + ", " + year);
+            for (Donation d : donations){
+                fundInfo.add(fundName); // fund name (0)
+                fundInfo.add("$" + Long.toString(d.getAmount())); // donation amount (1)
+                fundInfo.add(d.getDate()); // donation date (2)
+                allContributions.add(fundInfo);
             }
+        }
+
+        // sort each donation by time regardless of fund
+        Collections.sort(allContributions, (d1, d2) -> d1.get(2).compareTo(d2.get(2)));
+        Collections.reverse(allContributions);
+        for (List<String> donation : allContributions){
+            String origDate = donation.get(2);
+            String year = origDate.substring(0, 4).trim();
+            String month = origDate.substring(5, 7).trim();
+            String date = origDate.substring(8, 10).trim();
+            if (month.equals("01")) {
+                month = "January";
+            } else if (month.equals("02")) {
+                month = "February";
+            } else if (month.equals("03")) {
+                month = "March";
+            } else if (month.equals("04")) {
+                month = "April";
+            } else if (month.equals("05")) {
+                month = "May";
+            } else if (month.equals("06")) {
+                month = "June";
+            } else if (month.equals("07")) {
+                month = "July";
+            } else if (month.equals("08")) {
+                month = "August";
+            } else if (month.equals("09")) {
+                month = "September";
+            } else if (month.equals("10")) {
+                month = "October";
+            } else if (month.equals("11")) {
+                month = "November";
+            } else if (month.equals("12")) {
+                month = "December";
+            } else {
+                month = "Invalid month";
+            }
+
+            //System.out.println("* Fund: " + donation.get(0) + " -> " + donation.get(1) + " on " + donation.get(2));
+            System.out.println("* Fund: " + donation.get(0) + " -> " + donation.get(1) + " donated on " + month + " " + date + ", " + year);
         }
 
         System.out.println("Press enter to go back");
