@@ -20,7 +20,8 @@ public class DataManager_attemptLogin_Test {
         DataManager dm = new DataManager(new WebClient("localhost", 3001) {
             @Override
             public String makeRequest(String resource, Map<String, Object> queryParams) {
-                return "{\"status\":\"success\",\"data\":{\"_id\":\"123\",\"login\":\"Patrick\",\"password\":\"1020\"," +
+                if (resource == "/findOrgByLoginAndPassword")
+                    return "{\"status\":\"success\",\"data\":{\"_id\":\"123\",\"login\":\"Patrick\",\"password\":\"1020\"," +
                         "\"name\":\"Patrick\",\"description\":\"KC\",\"funds\":[" +
                         "{\"target\":5000," +
                         "\"_id\":\"6479e450e99150cda7f6dd6f\",\"name\":\"Philan\",\"description\":\"Children Fund\"," +
@@ -28,6 +29,9 @@ public class DataManager_attemptLogin_Test {
                         "{\"target\":5000," +
                         "\"_id\":\"6479e450e99150cda7f6dd6f\",\"name\":\"Philan\",\"description\":\"Children Fund\"," +
                         "\"org\":\"6479e41ce99150cda7f6dd6c\",\"donations\":[],\"__v\":0}" + "],\"__v\":0}}";
+                else if (resource == "/findContributorNameById")
+                    return "{\"status\":\"success\",\"data\":\"wj\"}";
+                return null;
             }
 
         });
