@@ -21,10 +21,10 @@ GitHub repo URL: https://github.com/Patrick-ChenKehan/CIS-5730-Project
 
       **Answer:** Some of the older tests that tested the attemptLogin, createFund, and getContributeName methods in the DataManager    class now fail as we handle issues in the DataManager class differently based on teh specifications of the RobustnessTest given to us. Hence, we changed the failing tests based on our updated code and marked them so it is evident to the reader. 
     
-  4. Instructions on how to start each app, if you changed anything from the original version of the code, e.g. the name of the Java main class or JavaScript entry point, arguments to the programs, etc. If you did not change anything, you may omit this.
+  4. Instructions on how to start each app, if you changed anything from the original version of the code, e.g. the name of the Java main class or JavaScript entry point, arguments to the programs, etc. If you did not change anything, you may omit this. <br>
     **Answer:** Nothing was changed. To run the program, still run UserInterface with username as the first term and the password as the second term.
 
-  5. A brief but specific description of each team member’s contributions, including the task numbers that they worked on.
+  5. A brief but specific description of each team member’s contributions, including the task numbers that they worked on. <br>
     **Answer:**
     Kehan Chen: tasks 2.3 and 2.7
     Jun Wang: tasks 2.1 and 2.8
