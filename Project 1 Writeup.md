@@ -9,8 +9,6 @@ GitHub repo URL: https://github.com/Patrick-ChenKehan/CIS-5730-Project
   **Answer:** 2.7, 2.8, 2.9
 
   2. For each task you completed in this phase (Required or Additional), a brief description of the changes you made to the provided code, e.g. the names of any classes or methods that were changed, new methods that were created, etc.
-
-
     **Answer:**
     2.1: We create a private map in the DataManager Class, and for every time the getContributorName method encounters an id, it first checks whether the map contains the id as a key. If yes, the method returns the name stored in the map. If not, the method will make requests via the WebClient for information.
     2.2: All the Tests in the provided test suit were passed after changing the DataManager class accordingly. We modified the UserInterface class so that depending on the error, it prints out the relevant error message that we set, when the error is thrown in the DataManager class. After it is thrown it reprints the user without terminating the program. (Only exception is if the initial login password are incorrect, since then the user is not automatically prompted and must change the runtime arguments and re-run the UserInterface class to proceed)
@@ -21,15 +19,12 @@ GitHub repo URL: https://github.com/Patrick-ChenKehan/CIS-5730-Project
     
   3. Any known bugs or other issues with the tasks you attempted in this phase.
 
-
       **Answer:** Some of the older tests that tested the attemptLogin, createFund, and getContributeName methods in the DataManager    class now fail as we handle issues in the DataManager class differently based on teh specifications of the RobustnessTest given to us. Hence, we changed the failing tests based on our updated code and marked them so it is evident to the reader. 
     
   4. Instructions on how to start each app, if you changed anything from the original version of the code, e.g. the name of the Java main class or JavaScript entry point, arguments to the programs, etc. If you did not change anything, you may omit this.
 
-
 **Answer:** Nothing was changed. To run the program, still run UserInterface with username as the first term and the password as the second term.
   5. A brief but specific description of each team member’s contributions, including the task numbers that they worked on.
-
 
 **Answer:**
 Kehan Chen: tasks 2.3 and 2.7
