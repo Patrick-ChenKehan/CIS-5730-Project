@@ -25,18 +25,30 @@ public class DataManager {
 	 * @return an Organization object if successful; null if unsuccessful
 	 */
 	public Organization attemptLogin(String login, String password) {
-
-		try {
+		if (login == null){
+			throw new IllegalArgumentException("login is null");
+		}
+		if (password == null){
+			throw new IllegalArgumentException("password is null");
+		}
 			Map<String, Object> map = new HashMap<>();
 			map.put("login", login);
 			map.put("password", password);
+			if (client == null){
+				throw new IllegalStateException("Webclient is null");
+			}
 			String response = client.makeRequest("/findOrgByLoginAndPassword", map);
 
 			if (response == null) // Task 1.8 Handle failed connection
 				throw new IllegalStateException("Error in communicating with server");
 
 			JSONParser parser = new JSONParser();
-			JSONObject json = (JSONObject) parser.parse(response);
+			JSONObject json ;
+			try {
+				json = (JSONObject) parser.parse(response);
+			} catch (Exception e){
+				throw new IllegalStateException("web client error");
+			}
 			String status = (String)json.get("status");
 
 			if (status.equals("success")) {
@@ -77,12 +89,8 @@ public class DataManager {
 
 				return org;
 			}
-			else return null;
-		}
-		catch (Exception e) {
-//			e.printStackTrace();
-			throw new IllegalStateException(e.getMessage());
-		}
+			else throw new IllegalStateException("WebClient returns error");
+
 	}
 
 	/**
@@ -91,34 +99,42 @@ public class DataManager {
 	 * @return the name of the contributor on success; null if no contributor is found
 	 */
 	public String getContributorName(String id) {
-
-		try {
+			if (id == null){
+				throw new IllegalArgumentException("id is null");
+			}
 			if (results.containsKey(id)) {
 				return results.get(id);
 			} else {
 
-
 				Map<String, Object> map = new HashMap<>();
 				map.put("id", id);
+
+				if (client == null){
+					throw new IllegalStateException("Web Client is null");
+				}
 				String response = client.makeRequest("/findContributorNameById", map);
 
+				if (response == null) // Handle failed connection
+					throw new IllegalStateException("Error in communicating with server");
 				JSONParser parser = new JSONParser();
-				JSONObject json = (JSONObject) parser.parse(response);
+				JSONObject json;
+				try {
+					json = (JSONObject) parser.parse(response);
+				} catch (Exception e) {
+					throw new IllegalStateException();
+				}
 				String status = (String) json.get("status");
 
 				if (status.equals("success")) {
 					String name = (String) json.get("data");
 					results.put(id, name);
 					return name;
-				} else return null;
+				} else throw new IllegalStateException("WebClient returns error");
 
 
 			}
-		}
 
-		catch (Exception e) {
-			return null;
-		}
+
 	}
 
 	/**
@@ -126,18 +142,36 @@ public class DataManager {
 	 * @return a new Fund object if successful; null if unsuccessful
 	 */
 	public Fund createFund(String orgId, String name, String description, long target) {
-
-		try {
+			if (orgId == null){
+				throw new IllegalArgumentException("OrgID is null");
+			}
+			if (name == null){
+				throw new IllegalArgumentException("name is null");
+			}
+			if (description == null){
+				throw new IllegalArgumentException("description is null");
+			}
 
 			Map<String, Object> map = new HashMap<>();
 			map.put("orgId", orgId);
 			map.put("name", name);
 			map.put("description", description);
 			map.put("target", target);
+			if (client == null){
+				throw new IllegalStateException("Web Client is null");
+			}
 			String response = client.makeRequest("/createFund", map);
 
+			if (response == null) // Handle failed connection
+				throw new IllegalStateException("Error in communicating with server");
+
 			JSONParser parser = new JSONParser();
-			JSONObject json = (JSONObject) parser.parse(response);
+			JSONObject json;
+			try {
+				json = (JSONObject) parser.parse(response);
+			} catch (Exception e){
+				throw new IllegalStateException("parser error");
+			}
 			String status = (String)json.get("status");
 
 			if (status.equals("success")) {
@@ -145,16 +179,15 @@ public class DataManager {
 				String fundId = (String)fund.get("_id");
 				return new Fund(fundId, name, description, target);
 			}
-			else return null;
+			else throw new IllegalStateException("WebClient returns error");
 
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
+
 	}
 
 	public void deleteFund(String fundID) {
+		if (fundID == null){
+			throw new IllegalArgumentException("fundID is null");
+		}
 		try {
 
 			Map<String, Object> map = new HashMap<>();
