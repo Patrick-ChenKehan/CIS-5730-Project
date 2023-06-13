@@ -36,7 +36,6 @@ public class UserInterface {
                 Organization newOrg = dataManager.attemptLogin(login, password);
                 if (newOrg == null) {
                     System.out.println("Login fails");
-
                 }else {
                     org = newOrg;
                     System.out.println("Login successful.");
@@ -62,15 +61,15 @@ public class UserInterface {
                 }
                 System.out.println("Enter the fund number to see more information.");
             }
-
             System.out.println("Enter 0 to create a new fund");
+            System.out.println("Enter -2 to list ALL the contributions to this organization's funds");
             System.out.println("Enter -1 to log out");
 
             // handle invalid option
             String option_str = in.nextLine().trim();
             while (!((option_str.matches("-?\\d+") &&
                     Integer.parseInt(option_str) <= org.getFunds().size() &&
-                    Integer.parseInt(option_str) >= -1))) {
+                    Integer.parseInt(option_str) >= -2))) {
                 System.out.print("Option invalid. Please re-enter your option: ");
                 option_str = in.nextLine().trim();
             }
@@ -80,6 +79,8 @@ public class UserInterface {
                 createFund();
             } else if (option == -1) {
                 logout();
+            } else if (option == -2) {
+                displayAllContributions();
             } else {
                 displayFund(option);
             }
@@ -129,6 +130,55 @@ public class UserInterface {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void displayAllContributions() {
+        System.out.println("All donations are ranked by decreasing order of time. \n" +
+                "The contributions for the funds in this organization are as follows: ");
+        List<Fund> allFunds = org.getFunds();
+        for (Fund fund: allFunds) {
+            String fundName = fund.getName();
+            List<Donation> donations = fund.getDonations();
+            Collections.sort(donations, (d1, d2) -> d1.getDate().compareTo(d2.getDate()));
+            for (Donation donation : donations) {
+                String origDate = donation.getDate();
+                String year = origDate.substring(0, 4).trim();
+                String month = origDate.substring(5, 7).trim();
+                String date = origDate.substring(8, 10).trim();
+                if (month.equals("01")) {
+                    month = "January";
+                } else if (month.equals("02")) {
+                    month = "February";
+                } else if (month.equals("03")) {
+                    month = "March";
+                } else if (month.equals("04")) {
+                    month = "April";
+                } else if (month.equals("05")) {
+                    month = "May";
+                } else if (month.equals("06")) {
+                    month = "June";
+                } else if (month.equals("07")) {
+                    month = "July";
+                } else if (month.equals("08")) {
+                    month = "August";
+                } else if (month.equals("09")) {
+                    month = "September";
+                } else if (month.equals("10")) {
+                    month = "October";
+                } else if (month.equals("11")) {
+                    month = "November";
+                } else if (month.equals("12")) {
+                    month = "December";
+                } else {
+                    month = "Invalid month";
+                }
+                System.out.println("* Fund: " + fundName + " -> $" + donation.getAmount() + " on " + month + " " + date + ", " + year);
+            }
+        }
+
+        System.out.println("Press enter to go back");
+        in.nextLine();
+
     }
 
 
@@ -233,6 +283,7 @@ public class UserInterface {
             deleteFund(fundNumber);
 
     }
+
 
 
     public static void main(String[] args) {
