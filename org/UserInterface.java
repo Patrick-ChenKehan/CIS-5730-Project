@@ -34,14 +34,13 @@ public class UserInterface {
 
             try {
                 Organization newOrg = dataManager.attemptLogin(login, password);
-                if (newOrg == null) {
-                    System.out.println("Login fails");
-                }else {
                     org = newOrg;
                     System.out.println("Login successful.");
                     loggedIn = true;
-                }
-            } catch (Exception e) {
+            } catch (IllegalArgumentException e) {
+                System.out.println(e.getMessage());
+                System.out.println("Try re-inputing credentials: ");
+            } catch (IllegalStateException e){
                 System.out.println(e.getMessage());
             }
         }
@@ -107,8 +106,14 @@ public class UserInterface {
             target_str = in.nextLine().trim();
         }
         long target = (long)Double.parseDouble(target_str);
-
-        Fund fund = dataManager.createFund(org.getId(), name, description, target);
+        Fund fund = null;
+        try {
+            fund = dataManager.createFund(org.getId(), name, description, target);
+        } catch (Exception e){
+            System.out.println(e.getMessage());
+            System.out.println("Please try to create fund again: ");
+            createFund();
+        }
         org.getFunds().add(fund);
 
     }
@@ -127,13 +132,15 @@ public class UserInterface {
                 dataManager.deleteFund(org.getFunds().get(fundNumber - 1).getId());
                 org.deleteFund(fundNumber);
             } catch (Exception e) {
-                e.printStackTrace();
+                System.out.println(e.getMessage());
+                System.out.println("There was a problem with deletion. Press y to try deleting again" +
+                        "or else press n to return to main menu");
             }
         }
     }
 
     public void displayAllContributions() {
-        System.out.println("All donations are ranked by decreasing order of time. \n" +
+        System.out.println("All donations are ranked by decreasing order of date and time donated. \n" +
                 "The contributions for the funds in this organization are as follows: ");
         List<List<String>> allContributions = new ArrayList<>();
         List<Fund> allFunds = org.getFunds();
@@ -244,7 +251,12 @@ public class UserInterface {
                 } else {
                     month = "Invalid month";
                 }
-                System.out.println("* " + donation.getContributorName() + ": $" + donation.getAmount() + " on " + month + " " + date + ", " + year);
+                try {
+                    System.out.println("* " + donation.getContributorName() + ": $" + donation.getAmount() + " on " + month + " " + date + ", " + year);
+                } catch (Exception e){
+                    System.out.println(e.getMessage());
+                    return;
+                }
                 totalAmount += donation.getAmount();
             }
         } else { // If in aggregated mode
@@ -312,17 +324,23 @@ public class UserInterface {
             return;
         }
 
+        Organization org = null;
         try {
-            Organization org = ds.attemptLogin(login, password);
-            if (org == null) {
-                System.out.println("Login fails");
-            } else {
-                UserInterface ui = new UserInterface(ds, org);
-                ui.start();
-            }
+            org = ds.attemptLogin(login, password);
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+            System.out.println("Re-input correct credentials as runtime args");
+        } catch (IllegalStateException e){
+            System.out.println(e.getMessage());
+            System.out.println("System error. Try again.");
+        }
+
+        try {
+            UserInterface ui = new UserInterface(ds, org);
+            ui.start();
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-    }
 
+    }
 }
