@@ -1,6 +1,7 @@
 */package-lock.json
 */node_modules
 */.DS_Store
+.DS_Store
 org/out
 org/out/*
 org/.idea/
