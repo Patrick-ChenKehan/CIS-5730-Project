@@ -1,5 +1,9 @@
 # Phase 2 writeup
 
+Authors: Arnav Gattani, Jun Wang, Kehan Chen 
+
+GitHub repo URL: https://github.com/Patrick-ChenKehan/CIS-5730-Project 
+
 1. The Additional Tasks that you would like graded for this phase. Please keep in mind that we will only grade three Additional Tasks for a group of three, and four Additional Tasks for a group of four. If you list more than that, the tasks that get graded will be decided at the grader’s discretion.
 
    **Answer:** 2.7, 2.8, 2.9
