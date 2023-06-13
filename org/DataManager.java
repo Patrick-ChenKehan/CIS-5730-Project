@@ -26,16 +26,16 @@ public class DataManager {
 	 */
 	public Organization attemptLogin(String login, String password) {
 		if (login == null){
-			throw new IllegalArgumentException("login is null");
+			throw new IllegalArgumentException("Null login: Please reenter credentials");
 		}
 		if (password == null){
-			throw new IllegalArgumentException("password is null");
+			throw new IllegalArgumentException("Null password: Please reenter credentials");
 		}
 			Map<String, Object> map = new HashMap<>();
 			map.put("login", login);
 			map.put("password", password);
 			if (client == null){
-				throw new IllegalStateException("Webclient is null");
+				throw new IllegalStateException("Error in logging in: Webclient is null");
 			}
 			String response = client.makeRequest("/findOrgByLoginAndPassword", map);
 
@@ -47,7 +47,7 @@ public class DataManager {
 			try {
 				json = (JSONObject) parser.parse(response);
 			} catch (Exception e){
-				throw new IllegalStateException("web client error");
+				throw new IllegalStateException("Error in logging in");
 			}
 			String status = (String)json.get("status");
 
@@ -89,7 +89,7 @@ public class DataManager {
 
 				return org;
 			}
-			else throw new IllegalStateException("WebClient returns error");
+			else throw new IllegalStateException("Login failed due to invalid login credentials.");
 
 	}
 
@@ -100,7 +100,7 @@ public class DataManager {
 	 */
 	public String getContributorName(String id) {
 			if (id == null){
-				throw new IllegalArgumentException("id is null");
+				throw new IllegalArgumentException("Null id: Please reenter credentials");
 			}
 			if (results.containsKey(id)) {
 				return results.get(id);
@@ -110,7 +110,7 @@ public class DataManager {
 				map.put("id", id);
 
 				if (client == null){
-					throw new IllegalStateException("Web Client is null");
+					throw new IllegalStateException("Error: Webclient is null");
 				}
 				String response = client.makeRequest("/findContributorNameById", map);
 
@@ -129,7 +129,7 @@ public class DataManager {
 					String name = (String) json.get("data");
 					results.put(id, name);
 					return name;
-				} else throw new IllegalStateException("WebClient returns error");
+				} else throw new IllegalStateException("Failed getting contributer. WebClient returns null");
 
 
 			}
@@ -158,7 +158,7 @@ public class DataManager {
 			map.put("description", description);
 			map.put("target", target);
 			if (client == null){
-				throw new IllegalStateException("Web Client is null");
+				throw new IllegalStateException("Error in creating Fund");
 			}
 			String response = client.makeRequest("/createFund", map);
 
@@ -170,7 +170,7 @@ public class DataManager {
 			try {
 				json = (JSONObject) parser.parse(response);
 			} catch (Exception e){
-				throw new IllegalStateException("parser error");
+				throw new IllegalStateException("Error in creating fund");
 			}
 			String status = (String)json.get("status");
 
@@ -179,20 +179,21 @@ public class DataManager {
 				String fundId = (String)fund.get("_id");
 				return new Fund(fundId, name, description, target);
 			}
-			else throw new IllegalStateException("WebClient returns error");
+			else throw new IllegalStateException("createFund failed. Please try creating fund again");
 
 
 	}
 
 	public void deleteFund(String fundID) {
 		if (fundID == null){
-			throw new IllegalArgumentException("fundID is null");
+			throw new IllegalArgumentException("Input was invalid: fundID is null.");
 		}
 		try {
-
 			Map<String, Object> map = new HashMap<>();
 			map.put("id", fundID);
-
+			if (client == null){
+				throw new IllegalStateException("Could not delete the fund.");
+			}
 			String response = client.makeRequest("/deleteFund", map);
 
 			if (response == null) // Handle failed connection
@@ -203,12 +204,11 @@ public class DataManager {
 			String status = (String)json.get("status");
 
 			if (status.equals("error")) {
-				throw new IllegalStateException("Deletion failed");
+				throw new IllegalStateException("Deletion failed. Please try again.");
 			}
 
 		}
 		catch (Exception e) {
-			e.printStackTrace();
 			throw new IllegalStateException(e.getMessage());
 		}
 	}
