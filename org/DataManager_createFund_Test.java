@@ -38,7 +38,7 @@ public class DataManager_createFund_Test {
 		
 	}
 
-
+	// similar to test in Robustness Test
 	@Test(expected=IllegalStateException.class)
 	public void testFailure() {
 
@@ -55,6 +55,7 @@ public class DataManager_createFund_Test {
 		assertNull(f);
 	}
 
+	// similar to test in Robustness Test
 	@Test(expected=IllegalStateException.class)
 	public void testException() {
 

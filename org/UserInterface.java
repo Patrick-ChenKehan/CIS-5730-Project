@@ -285,7 +285,7 @@ public class UserInterface {
         System.out.println("Total donation amount: $" + totalAmount + " (" + percent + "% of target)");
         String choice;
         if (verbose) {
-            System.out.println("*Enter \"Agg\" to see contributor summary \n" +
+            System.out.println("*Enter \"Agg\" to see donations now aggregated by contributor \n" +
                     "*Enter \"Delete\" to delete the fund\n" +
                     "*Enter any other to go back to the listing of funds");
             choice = in.nextLine().trim();
@@ -294,7 +294,7 @@ public class UserInterface {
                 System.out.println("Donation display changed to aggregated");
             }
         } else {
-            System.out.println("*Enter \"Verbose\" to see contributor summary \n" +
+            System.out.println("*Enter \"Verbose\" to see individual donations \n" +
                     "*Enter \"Delete\" to delete the fund\n" +
                     "*Enter any other to go back to the listing of funds");
             choice = in.nextLine().trim();
