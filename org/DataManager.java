@@ -19,6 +19,34 @@ public class DataManager {
 
 	private  Map<String, String> results = new HashMap<>();
 
+
+	public Organization createLogin(String login, String password, String name, String description){
+		try{
+			Map<String, Object> map = new HashMap<>();
+			map.put("login", login);
+			map.put("password", password);
+			map.put("name", name);
+			map.put("description", description);
+			String response = client.makeRequest("/createOrg", map);
+
+			if (response == null)
+				throw new IllegalStateException("Error in communicating with server");
+
+			JSONParser parser = new JSONParser();
+			JSONObject json = (JSONObject) parser.parse(response);
+			String status = (String)json.get("status");
+
+			if (status.equals("success")){
+				return attemptLogin(login, password);
+			}
+			else return null;
+
+
+		}catch(Exception e){
+			throw new IllegalStateException(e.getMessage());
+		}
+	}
+
 	/**
 	 * Attempt to log the user into an Organization account using the login and password.
 	 * This method uses the /findOrgByLoginAndPassword endpoint in the API

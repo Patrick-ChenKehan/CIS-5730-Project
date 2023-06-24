@@ -72,7 +72,7 @@ public class DataManager_createFund_Test {
 
 		Fund f = dm.createFund("12345", "new fund", "this is the new fund", 10000);
 
-		//assertNull(f);
+		assertNull(f);
 
 	}
 

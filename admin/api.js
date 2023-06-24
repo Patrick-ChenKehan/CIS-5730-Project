@@ -6,6 +6,28 @@ const {Fund} = require('./DbConfig.js');
 const {Contributor} = require('./DbConfig.js');
 const {Donation} = require('./DbConfig.js');
 
+app.use('/createOrg', (req, res) => {
+
+	var org = new Organization({
+		login: req.query.login,
+		password: req.query.password,
+		name: req.query.name,
+		description: req.query.description,
+		funds: []
+	    });
+
+	org.save( (err) => {
+		if (err) {
+		    res.json({"status": "error", "data" : err});
+		}
+		else {
+		    //console.log(org);
+		    res.json({"status": "success", "data": org });
+		}
+	    });
+
+    });
+
 
 /*
 Return an org with login specified as req.query.login and password specified as 

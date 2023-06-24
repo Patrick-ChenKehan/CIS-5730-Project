@@ -314,32 +314,122 @@ public class UserInterface {
     public static void main(String[] args) {
 
         DataManager ds = new DataManager(new WebClient("localhost", 3001));
-        String login ;
-        String password;
+        String login = "";
+        String password = "";
+        boolean provide = false;
         try {
             login = args[0];
             password = args[1];
-        } catch (ArrayIndexOutOfBoundsException e){
+            provide = true;
+        } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("Credentials invalid/unprovided");
-            return;
         }
 
-        Organization org = null;
-        try {
-            org = ds.attemptLogin(login, password);
-        } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
-            System.out.println("One or more credentials are invalid. Please try again with new runtime arguments");
-            return;
-        } catch (IllegalStateException e){
-            System.out.println(e.getMessage());
-            System.out.println("Credentials not found. Please try again with new runtime arguments.");
-            return;
-        }
 
         try {
-            UserInterface ui = new UserInterface(ds, org);
-            ui.start();
+            if (provide) {
+                Organization org = ds.attemptLogin(login, password);
+                if (org == null) {
+                    System.out.println("Login fails");
+                    provide = false;
+                } else {
+                    UserInterface ui = new UserInterface(ds, org);
+                    ui.start();
+                }
+            }
+            if (!provide) {
+                while (true) {
+                    System.out.println("1. Login");
+                    System.out.println("2. Create a new organization");
+
+                    System.out.print("Enter your choice: ");
+                    Scanner in = new Scanner(System.in);
+                    String option_str = in.nextLine().trim();
+                    if (option_str.matches("1") || option_str.matches("2")) {
+                        int choice = Integer.parseInt(option_str);
+                        if (choice == 1) {
+                            boolean loggedIn = false;
+                            System.out.print("Enter your login: ");
+                            login = in.nextLine().trim();
+
+                            System.out.print("Enter your password: ");
+                            password = in.nextLine().trim();
+
+
+                            try {
+                                Organization org = ds.attemptLogin(login, password);
+                                if (org == null) {
+                                    System.out.println("Login fails");
+                                } else {
+                                    System.out.println("Login successful.");
+                                    UserInterface ui = new UserInterface(ds, org);
+                                    ui.start();
+                                    break;
+                                }
+                            } catch (Exception e) {
+                                System.out.println(e.getMessage());
+                            }
+
+                        }
+
+                        if (choice == 2) {
+                            String newLogin, newPassword, orgName, orgDescription;
+                            while(true) {
+                                System.out.print("Enter a login: ");
+                                newLogin = in.nextLine().trim();
+                                if (newLogin != "") {
+                                    break;
+                                }else{
+                                    System.out.println("Could not be blank");
+                                }
+                            }
+                            while(true) {
+                                System.out.print("Enter a password: ");
+                                newPassword = in.nextLine().trim();
+                                if (newPassword != "") {
+                                    break;
+                                }else{
+                                    System.out.println("Could not be blank");
+                                }
+                            }
+                            while(true) {
+                                System.out.print("Enter an organization name: ");
+                                orgName = in.nextLine().trim();
+                                if (orgName != "") {
+                                    break;
+                                } else {
+                                    System.out.println("Could not be blank");
+                                }
+                            }
+                            while(true) {
+                                System.out.print("Enter an organization description: ");
+                                orgDescription = in.nextLine().trim();
+                                if (orgDescription != "") {
+                                    break;
+                                } else {
+                                    System.out.println("Could not be blank");
+                                }
+                            }
+
+                            try{
+                                Organization org = ds.createLogin(newLogin, newPassword, orgName, orgDescription);
+                                if (org == null) {
+                                    System.out.println("Login fails.");
+                                } else {
+                                    System.out.println("Login successful.");
+                                    UserInterface ui = new UserInterface(ds, org);
+                                    ui.start();
+                                    break;
+                                }
+                            } catch (Exception e){
+                                System.out.println(e.getMessage());
+                            }
+                        }
+                    }else{
+                        System.out.println("Invalid.");
+                    }
+                }
+            }
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
