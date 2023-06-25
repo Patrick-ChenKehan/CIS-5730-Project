@@ -24,6 +24,8 @@ public class Fund {
 	}
 
 	private void setAggregatedDonations() {
+		aggregated_donation_number.clear();
+		aggregated_donation_amount.clear();
 		for (Donation donation:donations) {
 			String contributorName = donation.getContributorName();
 			aggregated_donation_number.put(contributorName,
