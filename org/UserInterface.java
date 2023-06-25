@@ -19,7 +19,8 @@ public class UserInterface {
         org = null; // Reset the organization
         System.out.println("Logged out successfully.");
         System.out.println("Please log in to continue.");
-        login();
+        //login();
+        caseNoCredit(dataManager);
     }
 
     public void login() {
@@ -391,6 +392,108 @@ public class UserInterface {
     }
 
 
+    public static void caseNoCredit(DataManager ds){
+        String login = "";
+        String password = "";
+        while (true) {
+            System.out.println("1. Login");
+            System.out.println("2. Create a new organization");
+
+            System.out.print("Enter your choice: ");
+            Scanner in = new Scanner(System.in);
+            String option_str = in.nextLine().trim();
+            if (option_str.matches("1") || option_str.matches("2")) {
+                int choice = Integer.parseInt(option_str);
+                if (choice == 1) {
+                    boolean loggedIn = false;
+                    System.out.print("Enter your login: ");
+                    login = in.nextLine().trim();
+
+                    System.out.print("Enter your password: ");
+                    password = in.nextLine().trim();
+
+
+                    try {
+                        Organization org = ds.attemptLogin(login, password);
+                        if (org == null) {
+                            System.out.println("Login fails");
+                        } else {
+                            System.out.println("Login successful.");
+                            UserInterface ui = new UserInterface(ds, org);
+                            ui.start();
+                            break;
+                        }
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                    }
+
+                }
+
+                if (choice == 2) {
+                    String newLogin, newPassword, orgName, orgDescription;
+                    while(true) {
+                        System.out.print("Enter a login: ");
+                        newLogin = in.nextLine().trim();
+                        if (newLogin != "") {
+                            break;
+                        }else{
+                            System.out.println("Could not be blank");
+                        }
+                    }
+                    while(true) {
+                        System.out.print("Enter a password: ");
+                        newPassword = in.nextLine().trim();
+                        if (newPassword != "") {
+                            break;
+                        }else{
+                            System.out.println("Could not be blank");
+                        }
+                    }
+                    while(true) {
+                        System.out.print("Enter an organization name: ");
+                        orgName = in.nextLine().trim();
+                        if (orgName != "") {
+                            break;
+                        } else {
+                            System.out.println("Could not be blank");
+                        }
+                    }
+                    while(true) {
+                        System.out.print("Enter an organization description: ");
+                        orgDescription = in.nextLine().trim();
+                        if (orgDescription != "") {
+                            break;
+                        } else {
+                            System.out.println("Could not be blank");
+                        }
+                    }
+
+                    if (ds.checkLogin(newLogin)){
+                        System.out.println("Login already exist");
+                        continue;
+                    }
+
+                    try{
+                        Organization org = ds.createLogin(newLogin, newPassword, orgName, orgDescription);
+                        if (org == null) {
+                            System.out.println("Login fails.");
+                        } else {
+                            System.out.println("Login successful.");
+                            UserInterface ui = new UserInterface(ds, org);
+                            ui.start();
+                            break;
+                        }
+                    } catch (Exception e){
+                        System.out.println(e.getMessage());
+                    }
+                }
+            }else{
+                System.out.println("Invalid.");
+            }
+        }
+    }
+
+
     public static void main(String[] args) {
 
         DataManager ds = new DataManager(new WebClient("localhost", 3001));
@@ -418,97 +521,7 @@ public class UserInterface {
                 }
             }
             if (!provide) {
-                while (true) {
-                    System.out.println("1. Login");
-                    System.out.println("2. Create a new organization");
-
-                    System.out.print("Enter your choice: ");
-                    Scanner in = new Scanner(System.in);
-                    String option_str = in.nextLine().trim();
-                    if (option_str.matches("1") || option_str.matches("2")) {
-                        int choice = Integer.parseInt(option_str);
-                        if (choice == 1) {
-                            boolean loggedIn = false;
-                            System.out.print("Enter your login: ");
-                            login = in.nextLine().trim();
-
-                            System.out.print("Enter your password: ");
-                            password = in.nextLine().trim();
-
-
-                            try {
-                                Organization org = ds.attemptLogin(login, password);
-                                if (org == null) {
-                                    System.out.println("Login fails");
-                                } else {
-                                    System.out.println("Login successful.");
-                                    UserInterface ui = new UserInterface(ds, org);
-                                    ui.start();
-                                    break;
-                                }
-                            } catch (Exception e) {
-                                System.out.println(e.getMessage());
-                            }
-
-                        }
-
-                        if (choice == 2) {
-                            String newLogin, newPassword, orgName, orgDescription;
-                            while(true) {
-                                System.out.print("Enter a login: ");
-                                newLogin = in.nextLine().trim();
-                                if (newLogin != "") {
-                                    break;
-                                }else{
-                                    System.out.println("Could not be blank");
-                                }
-                            }
-                            while(true) {
-                                System.out.print("Enter a password: ");
-                                newPassword = in.nextLine().trim();
-                                if (newPassword != "") {
-                                    break;
-                                }else{
-                                    System.out.println("Could not be blank");
-                                }
-                            }
-                            while(true) {
-                                System.out.print("Enter an organization name: ");
-                                orgName = in.nextLine().trim();
-                                if (orgName != "") {
-                                    break;
-                                } else {
-                                    System.out.println("Could not be blank");
-                                }
-                            }
-                            while(true) {
-                                System.out.print("Enter an organization description: ");
-                                orgDescription = in.nextLine().trim();
-                                if (orgDescription != "") {
-                                    break;
-                                } else {
-                                    System.out.println("Could not be blank");
-                                }
-                            }
-
-                            try{
-                                Organization org = ds.createLogin(newLogin, newPassword, orgName, orgDescription);
-                                if (org == null) {
-                                    System.out.println("Login fails.");
-                                } else {
-                                    System.out.println("Login successful.");
-                                    UserInterface ui = new UserInterface(ds, org);
-                                    ui.start();
-                                    break;
-                                }
-                            } catch (Exception e){
-                                System.out.println(e.getMessage());
-                            }
-                        }
-                    }else{
-                        System.out.println("Invalid.");
-                    }
-                }
+                caseNoCredit(ds);
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());

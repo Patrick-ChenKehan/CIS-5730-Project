@@ -31,6 +31,24 @@ app.use('/createOrg', (req, res) => {
     });
 
 
+app.use('/findOrgByLogin', (req, res) => {
+
+	var query = {"login" : req.query.login };
+	
+	Organization.findOne( query, (err, result) => {
+		if (err) {
+			res.json({ "status": "error", "data" : err});
+		}
+		else if (!result){
+			res.json({ "status": "login failed" });
+		}
+		else {
+			//console.log(result);
+			res.json({ "status" : "success", "data" : result});
+		}
+		});
+	});
+
 /*
 Return an org with login specified as req.query.login and password specified as 
 req.query.password; this essentially acts as login for organizations

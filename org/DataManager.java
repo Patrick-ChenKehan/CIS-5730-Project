@@ -51,6 +51,27 @@ public class DataManager {
 	}
 
 
+	public boolean checkLogin(String login){
+		try{
+			Map<String, Object> map = new HashMap<>();
+			map.put("login", login);
+			String response = client.makeRequest("/findOrgByLogin", map);
+			if (response == null)
+				throw new IllegalStateException("Error in communicating with server");
+			JSONParser parser = new JSONParser();
+			JSONObject json = (JSONObject) parser.parse(response);
+			String status = (String)json.get("status");
+
+			if (status.equals("success")){
+				return true;
+			}
+			else return false;
+		}catch(Exception e){
+			throw new IllegalStateException(e.getMessage());
+		}
+	}
+
+
 	public Organization createLogin(String login, String password, String name, String description){
 		try{
 			Map<String, Object> map = new HashMap<>();
