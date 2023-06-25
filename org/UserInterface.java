@@ -61,14 +61,15 @@ public class UserInterface {
                 System.out.println("Enter the fund number to see more information.");
             }
             System.out.println("Enter 0 to create a new fund");
-            System.out.println("Enter -2 to list ALL the contributions to this organization's funds");
             System.out.println("Enter -1 to log out");
+            System.out.println("Enter -2 to list ALL the contributions to this organization's funds");
+            System.out.println("Enter -3 to change the password");
 
             // handle invalid option
             String option_str = in.nextLine().trim();
             while (!((option_str.matches("-?\\d+") &&
                     Integer.parseInt(option_str) <= org.getFunds().size() &&
-                    Integer.parseInt(option_str) >= -2))) {
+                    Integer.parseInt(option_str) >= -3))) {
                 System.out.print("Option invalid. Please re-enter your option: ");
                 option_str = in.nextLine().trim();
             }
@@ -80,7 +81,9 @@ public class UserInterface {
                 logout();
             } else if (option == -2) {
                 displayAllContributions();
-            } else {
+            } else if (option == -3) {
+                changePassword();
+            }else {
                 displayFund(option);
             }
         }
@@ -127,13 +130,14 @@ public class UserInterface {
         }
         if (choice.equals("n")) {
             System.out.println("Deletion canceled for fund "+ fundNumber);
+            displayFund(fundNumber); // Dangerous cumulating stacks
         } else if (choice.equals("y")) {
             try {
                 dataManager.deleteFund(org.getFunds().get(fundNumber - 1).getId());
                 org.deleteFund(fundNumber);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
-                System.out.println("There was a problem with deletion. Press y to try deleting again" +
+                System.out.println("There was a problem with deletion. Press y to try deleting again " +
                         "or else press n to return to main menu");
             }
         }
@@ -200,7 +204,6 @@ public class UserInterface {
         in.nextLine();
 
     }
-
 
     public void displayFund(int fundNumber) {
 
@@ -309,6 +312,41 @@ public class UserInterface {
 
     }
 
+    public void changePassword() {
+        System.out.println("Please enter your current password: ");
+        String old_password = in.nextLine().trim();
+        if (!old_password.equals(org.getPassword())) {
+            System.out.println("Password incorrect. Please try again.");
+            return;
+        }
+
+        String new_password_1 = null;
+        String new_password_2 = null;
+
+        while (new_password_1 == null || new_password_2 == null || !new_password_1.equals(new_password_2)) {
+            System.out.println("Please enter your new password: ");
+            new_password_1 = in.nextLine().trim();
+            if (new_password_1.length() == 0) {
+                System.out.println("Password cannot be empty. Please re-enter the password.");
+                continue;
+            }
+            System.out.println("Please enter your new password again: ");
+            new_password_2 = in.nextLine().trim();
+            if (!new_password_1.equals(new_password_2)) {
+                System.out.println("Passwords not match. Please try again.");
+                return;
+            }
+        }
+
+        try {
+            dataManager.changePassword(org.getId(), new_password_1);
+            org.changePassword(new_password_1);
+            System.out.println("Password changed successfully");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
 
 
     public static void main(String[] args) {

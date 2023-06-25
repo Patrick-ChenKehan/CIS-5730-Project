@@ -27,5 +27,6 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="junit.contrib.theories1" level="project" />
   </component>
 </module>

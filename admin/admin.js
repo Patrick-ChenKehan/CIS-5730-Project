@@ -121,9 +121,9 @@ app.use('/updateOrg', (req, res) => {
 		    //console.log(result);
 		    res.render("viewOrg", {"org" : result , 'status' : 'Successfully updated Organization'});
 		}
-	    });
-	
     });
+
+});
 
 
 /*

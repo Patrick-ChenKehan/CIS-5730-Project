@@ -84,7 +84,8 @@ public class DataManager {
 				String fundId = (String)data.get("_id");
 				String name = (String)data.get("name");
 				String description = (String)data.get("description");
-				Organization org = new Organization(fundId, name, description);
+				String correct_password = (String)data.get("password");
+				Organization org = new Organization(fundId, name, description, correct_password);
 
 				JSONArray funds = (JSONArray)data.get("funds");
 				Iterator it = funds.iterator();
@@ -239,6 +240,37 @@ public class DataManager {
 		catch (Exception e) {
 			throw new IllegalStateException(e.getMessage());
 		}
+	}
+
+	public void changePassword(String org_id, String new_password) {
+		if (org_id == null || new_password == null || new_password.isEmpty())
+			throw new IllegalArgumentException("org does not exist");
+
+		try {
+			Map<String, Object> map = new HashMap<>();
+			map.put("id", org_id);
+			map.put("password", new_password);
+			if (client == null){
+				throw new IllegalStateException("Client not exist.");
+			}
+			String response = client.makeRequest("/updateOrg", map);
+
+			if (response == null) // Handle failed connection
+				throw new IllegalStateException("Error in communicating with server");
+
+			JSONParser parser = new JSONParser();
+			JSONObject json = (JSONObject) parser.parse(response);
+			String status = (String)json.get("status");
+
+			if (status.equals("error")) {
+				throw new IllegalStateException("Deletion failed. Please try again.");
+			}
+
+		}
+		catch (Exception e) {
+			throw new IllegalStateException(e.getMessage());
+		}
+
 	}
 
 }

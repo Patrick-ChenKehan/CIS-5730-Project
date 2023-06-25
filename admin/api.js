@@ -115,6 +115,29 @@ app.use('/findFundById', (req, res) => {
     });
 
 /*
+Handle the form submission to update an org
+*/
+app.use('/updateOrg', (req, res) => {
+
+	var filter = {"_id" : req.query.id };
+
+	var update = { "id" : req.query.id, "password" : req.query.password };
+	
+	var action = { "$set" : update };
+
+	Organization.findOneAndUpdate( filter, action, { new : true }, (err, result) => {
+		if (err) {
+		    res.json({'status': 'error', 'data' : err});
+		}
+		else {
+		    //console.log(result);
+		    res.json({'status' : 'success', 'data' : result});
+		}
+    });
+
+});
+
+/*
 Delete the fund with ID specified as req.query.id
 */
 app.use('/deleteFund', (req, res) => {
