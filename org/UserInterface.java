@@ -64,12 +64,13 @@ public class UserInterface {
             System.out.println("Enter -1 to log out");
             System.out.println("Enter -2 to list ALL the contributions to this organization's funds");
             System.out.println("Enter -3 to change the password");
+            System.out.println("Enter -4 to update the account information");
 
             // handle invalid option
             String option_str = in.nextLine().trim();
             while (!((option_str.matches("-?\\d+") &&
                     Integer.parseInt(option_str) <= org.getFunds().size() &&
-                    Integer.parseInt(option_str) >= -3))) {
+                    Integer.parseInt(option_str) >= -4))) {
                 System.out.print("Option invalid. Please re-enter your option: ");
                 option_str = in.nextLine().trim();
             }
@@ -83,7 +84,9 @@ public class UserInterface {
                 displayAllContributions();
             } else if (option == -3) {
                 changePassword();
-            }else {
+            } else if (option == -4) {
+                updateAccount();
+            } else {
                 displayFund(option);
             }
         }
@@ -339,9 +342,33 @@ public class UserInterface {
         }
 
         try {
-            dataManager.changePassword(org.getId(), new_password_1);
+            dataManager.changePassword(org, new_password_1);
             org.changePassword(new_password_1);
             System.out.println("Password changed successfully");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void updateAccount() {
+        System.out.println("Please enter your current password: ");
+        String old_password = in.nextLine().trim();
+        if (!old_password.equals(org.getPassword())) {
+            System.out.println("Password incorrect. Please try again.");
+            return;
+        }
+
+        System.out.println("Please enter new name:");
+        String new_name = in.nextLine().trim();
+        System.out.println("Please enter new description: ");
+        String new_description = in.nextLine().trim();
+
+        try {
+            dataManager.updateAccount(org, new_name, new_description);
+            org.changeName(new_name);
+            org.changeDescription(new_description);
+            System.out.println("Account updated successfully");
         } catch (Exception e) {
             e.printStackTrace();
         }

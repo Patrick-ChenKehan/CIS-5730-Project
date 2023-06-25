@@ -213,6 +213,9 @@ public class DataManager {
 
 	}
 
+	/**
+	 * This method deletes a new fund in the database using the /deleteFund endpoint in the API
+	 */
 	public void deleteFund(String fundID) {
 		if (fundID == null){
 			throw new IllegalArgumentException("Input was invalid: fundID is null.");
@@ -242,14 +245,19 @@ public class DataManager {
 		}
 	}
 
-	public void changePassword(String org_id, String new_password) {
-		if (org_id == null || new_password == null || new_password.isEmpty())
+	/**
+	 * This method changes password of org in the database using the /updateOrg endpoint in the API
+	 */
+	public void changePassword(Organization org, String new_password) {
+		if (org.getId() == null || new_password == null || new_password.isEmpty())
 			throw new IllegalArgumentException("org does not exist");
 
 		try {
 			Map<String, Object> map = new HashMap<>();
-			map.put("id", org_id);
+			map.put("id", org.getId());
 			map.put("password", new_password);
+			map.put("name", org.getName());
+			map.put("description", org.getDescription());
 			String response = client.makeRequest("/updateOrg", map);
 
 			if (response == null) // Handle failed connection
@@ -260,7 +268,40 @@ public class DataManager {
 			String status = (String)json.get("status");
 
 			if (status.equals("error")) {
-				throw new IllegalStateException("Deletion failed. Please try again.");
+				throw new IllegalStateException("Password changing failed. Please try again.");
+			}
+
+		}
+		catch (Exception e) {
+			throw new IllegalStateException(e.getMessage());
+		}
+
+	}
+
+	/**
+	 * This method changes name/description of org in the database using the /updateOrg endpoint in the API
+	 */
+	public void updateAccount(Organization org, String name, String description) {
+		if (org.getId() == null || name == null || description == null)
+			throw new IllegalArgumentException("org does not exist");
+
+		try {
+			Map<String, Object> map = new HashMap<>();
+			map.put("id", org.getId());
+			map.put("password", org.getPassword());
+			map.put("name", name);
+			map.put("description", description);
+			String response = client.makeRequest("/updateOrg", map);
+
+			if (response == null) // Handle failed connection
+				throw new IllegalStateException("Error in communicating with server");
+
+			JSONParser parser = new JSONParser();
+			JSONObject json = (JSONObject) parser.parse(response);
+			String status = (String)json.get("status");
+
+			if (status.equals("error")) {
+				throw new IllegalStateException("Update failed. Please try again.");
 			}
 
 		}

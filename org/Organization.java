@@ -49,6 +49,14 @@ public class Organization {
 	public void changePassword(String password) {
 		this.password = password;
 	}
+
+	public void changeName(String name) {
+		this.name = name;
+	}
+
+	public void changeDescription(String description) {
+		this.description = description;
+	}
 	
 
 }

@@ -121,7 +121,7 @@ app.use('/updateOrg', (req, res) => {
 
 	var filter = {"_id" : req.query.id };
 
-	var update = { "id" : req.query.id, "password" : req.query.password };
+	var update = { "id" : req.query.id, "password" : req.query.password, "name" : req.query.name, "description" : req.query.description};
 	
 	var action = { "$set" : update };
 

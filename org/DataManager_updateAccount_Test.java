@@ -4,9 +4,9 @@ import java.util.Map;
 
 import static org.junit.Assert.*;
 
-public class DataManager_changePassword_Test {
+public class DataManager_updateAccount_Test {
     @Test
-    public void test_successful_change() {
+    public void test_successful_update() {
         DataManager dm = new DataManager(new WebClient("localhost", 3001) {
             @Override
             public String makeRequest(String resource, Map<String, Object> queryParams) {
@@ -27,7 +27,7 @@ public class DataManager_changePassword_Test {
             }
         });
         Organization org = dm.attemptLogin("Patrick", "1999");
-        dm.changePassword(org, "new password");
+        dm.updateAccount(org, "new name", "new description");
     }
 
     @Test (expected = IllegalStateException.class)
@@ -52,7 +52,7 @@ public class DataManager_changePassword_Test {
             }
         });
         Organization org = dm.attemptLogin("Patrick", "1999");
-        dm.changePassword(org, "new password");
+        dm.updateAccount(org, "new name", "new description");
     }
 
     @Test (expected = IllegalStateException.class)
@@ -77,7 +77,7 @@ public class DataManager_changePassword_Test {
             }
         });
         Organization org = dm.attemptLogin("Patrick", "1999");
-        dm.changePassword(org, "new password");
+        dm.updateAccount(org, "new name", "new description");
     }
 
     @Test (expected = IllegalArgumentException.class)
@@ -102,6 +102,6 @@ public class DataManager_changePassword_Test {
             }
         });
         Organization org = dm.attemptLogin("Patrick", "1999");
-        dm.changePassword(org, "");
+        dm.updateAccount(org, null, null);
     }
 }
