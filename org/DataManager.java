@@ -250,9 +250,6 @@ public class DataManager {
 			Map<String, Object> map = new HashMap<>();
 			map.put("id", org_id);
 			map.put("password", new_password);
-			if (client == null){
-				throw new IllegalStateException("Client not exist.");
-			}
 			String response = client.makeRequest("/updateOrg", map);
 
 			if (response == null) // Handle failed connection
