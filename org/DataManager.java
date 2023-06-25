@@ -20,6 +20,37 @@ public class DataManager {
 	private  Map<String, String> results = new HashMap<>();
 
 
+	public Donation makeDonation(String contributorID, String fundId, long fundAmount){
+		try{
+			Map<String, Object> map = new HashMap<>();
+			map.put("contributor", contributorID);
+			map.put("fund", fundId);
+			map.put("amount", fundAmount);
+			String response = client.makeRequest("/makeDonation", map);
+
+			if (response == null)
+				throw new IllegalStateException("Error in communicating with server");
+
+			JSONParser parser = new JSONParser();
+			JSONObject json = (JSONObject) parser.parse(response);
+			String status = (String)json.get("status");
+
+			if (status.equals("success")){
+				JSONObject donation = (JSONObject)json.get("data");
+				String contributorId = (String)donation.get("contributor");
+				String contributorName = this.getContributorName(contributorId);
+				long amount = (Long)donation.get("amount");
+				String date = (String)donation.get("date");
+				return new Donation(fundId, contributorName, amount, date);
+			}
+			else return null;
+
+		} catch (Exception e){
+			throw new IllegalStateException(e.getMessage());
+		}
+	}
+
+
 	public Organization createLogin(String login, String password, String name, String description){
 		try{
 			Map<String, Object> map = new HashMap<>();

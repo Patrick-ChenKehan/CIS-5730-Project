@@ -6,6 +6,8 @@ const {Fund} = require('./DbConfig.js');
 const {Contributor} = require('./DbConfig.js');
 const {Donation} = require('./DbConfig.js');
 
+
+
 app.use('/createOrg', (req, res) => {
 
 	var org = new Organization({
