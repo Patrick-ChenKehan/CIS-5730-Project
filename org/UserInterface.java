@@ -8,6 +8,7 @@ public class UserInterface {
     private Scanner in = new Scanner(System.in);
 
     private boolean verbose = true;
+    Map<String, String> dateConversion = new HashMap<>();
 
     public UserInterface(DataManager dataManager, Organization org) {
         this.dataManager = dataManager;
@@ -47,6 +48,18 @@ public class UserInterface {
     }
 
     public void start() {
+        dateConversion.put("01", "January");
+        dateConversion.put("02", "February");
+        dateConversion.put("03", "March");
+        dateConversion.put("04", "April");
+        dateConversion.put("05", "May");
+        dateConversion.put("06", "June");
+        dateConversion.put("07", "July");
+        dateConversion.put("08", "August");
+        dateConversion.put("09", "September");
+        dateConversion.put("10", "October");
+        dateConversion.put("11", "November");
+        dateConversion.put("12", "December");
         while (true) {
             System.out.println("\n\n");
 
@@ -58,7 +71,7 @@ public class UserInterface {
                     System.out.println(count + ": " + f.getName());
                     count++;
                 }
-                System.out.println("Enter the fund number to see more information.");
+                System.out.println("Enter the fund number to see more information or to make a donation to that fund.");
             }
             System.out.println("Enter 0 to create a new fund");
             System.out.println("Enter -1 to log out");
@@ -124,6 +137,49 @@ public class UserInterface {
 
     }
 
+    public void makeDonation(int fundNumber){
+        System.out.print("Enter the contributorID: ");
+        String contributorID = in.nextLine().trim();
+
+        while (contributorID.isEmpty()) {
+            System.out.print("ContributorID cannot be null. Please re-enter: ");
+            contributorID = in.nextLine().trim();
+        }
+        try {
+            String contributorName = dataManager.getContributorName(contributorID);
+            if (contributorName == null){
+                System.out.println("No contributor was found with this ID. Please try making donation again:");
+                makeDonation(fundNumber);
+            }
+        } catch (Exception e){
+            System.out.println("No contributor was found with this ID. Please try making donation again:");
+            makeDonation(fundNumber);
+        }
+
+        System.out.print("Please enter the donation amount: ");
+        String donationAmountStr = in.nextLine().trim();
+
+        while (!donationAmountStr.matches("\\d+(\\.\\d+)?")) {
+            System.out.print("Invalid Donation Amount. Please re-enter: ");
+            donationAmountStr = in.nextLine().trim();
+        }
+        long donationAmount = (long)Double.parseDouble(donationAmountStr);
+        Donation donation = null;
+        try {
+            donation = dataManager.makeDonation(contributorID, org.getFunds().get(fundNumber - 1).getId(), donationAmount);
+        } catch (Exception e){
+            System.out.println(e.getMessage());
+            System.out.println("Error: Please try to make donation again: ");
+            makeDonation(fundNumber);
+        }
+        List<Donation> allDonations = org.getFunds().get(fundNumber - 1).getDonations();
+        allDonations.add(donation);
+        org.getFunds().get(fundNumber - 1).setDonations(allDonations);
+    }
+
+
+
+
     public void deleteFund(int fundNumber) {
         System.out.println("Are you sure you want to delete fund " + fundNumber +"? (y/n)");
         String choice = in.nextLine();
@@ -146,16 +202,17 @@ public class UserInterface {
         }
     }
 
+
     public void displayAllContributions() {
         System.out.println("All donations are ranked by decreasing order of date and time donated. \n" +
                 "The contributions for the funds in this organization are as follows: ");
         List<List<String>> allContributions = new ArrayList<>();
         List<Fund> allFunds = org.getFunds();
         for (Fund fund: allFunds) {
-            List<String> fundInfo = new ArrayList<>();
             String fundName = fund.getName();
             List<Donation> donations = fund.getDonations();
             for (Donation d : donations){
+                List<String> fundInfo = new ArrayList<>();
                 fundInfo.add(fundName); // fund name (0)
                 fundInfo.add("$" + Long.toString(d.getAmount())); // donation amount (1)
                 fundInfo.add(d.getDate()); // donation date (2)
@@ -171,35 +228,10 @@ public class UserInterface {
             String year = origDate.substring(0, 4).trim();
             String month = origDate.substring(5, 7).trim();
             String date = origDate.substring(8, 10).trim();
-            if (month.equals("01")) {
-                month = "January";
-            } else if (month.equals("02")) {
-                month = "February";
-            } else if (month.equals("03")) {
-                month = "March";
-            } else if (month.equals("04")) {
-                month = "April";
-            } else if (month.equals("05")) {
-                month = "May";
-            } else if (month.equals("06")) {
-                month = "June";
-            } else if (month.equals("07")) {
-                month = "July";
-            } else if (month.equals("08")) {
-                month = "August";
-            } else if (month.equals("09")) {
-                month = "September";
-            } else if (month.equals("10")) {
-                month = "October";
-            } else if (month.equals("11")) {
-                month = "November";
-            } else if (month.equals("12")) {
-                month = "December";
-            } else {
+            month = dateConversion.get(month);
+            if (month == null){
                 month = "Invalid month";
             }
-
-            //System.out.println("* Fund: " + donation.get(0) + " -> " + donation.get(1) + " on " + donation.get(2));
             System.out.println("* Fund: " + donation.get(0) + " -> " + donation.get(1) + " donated on " + month + " " + date + ", " + year);
         }
 
@@ -211,7 +243,6 @@ public class UserInterface {
     public void displayFund(int fundNumber) {
 
         Fund fund = org.getFunds().get(fundNumber - 1);
-
         System.out.println("\n\n");
         System.out.println("Here is information about this fund:");
         System.out.println("Name: " + fund.getName());
@@ -223,38 +254,16 @@ public class UserInterface {
         double totalAmount = 0;
         double percent = 0.0;
         if (verbose) { // If in verbose mode
+            donations.sort(Comparator.comparing(Donation::getAmount).reversed());
             for (Donation donation : donations) {
-                donations.sort((d1, d2) -> (int) d2.getAmount() - (int) d1.getAmount()); // Sort donations in descending order
+                //donations.sort((d1, d2) -> (int) d2.getAmount() - (int) d1.getAmount()); // Sort donations in descending order
                 String origDate = donation.getDate();
                 String year = origDate.substring(0, 4).trim();
                 String month = origDate.substring(5, 7).trim();
                 String date = origDate.substring(8, 10).trim();
                 // task 1.9
-                if (month.equals("01")) {
-                    month = "January";
-                } else if (month.equals("02")) {
-                    month = "February";
-                } else if (month.equals("03")) {
-                    month = "March";
-                } else if (month.equals("04")) {
-                    month = "April";
-                } else if (month.equals("05")) {
-                    month = "May";
-                } else if (month.equals("06")) {
-                    month = "June";
-                } else if (month.equals("07")) {
-                    month = "July";
-                } else if (month.equals("08")) {
-                    month = "August";
-                } else if (month.equals("09")) {
-                    month = "September";
-                } else if (month.equals("10")) {
-                    month = "October";
-                } else if (month.equals("11")) {
-                    month = "November";
-                } else if (month.equals("12")) {
-                    month = "December";
-                } else {
+                month = dateConversion.get(month);
+                if (month == null){
                     month = "Invalid month";
                 }
                 try {
@@ -291,7 +300,8 @@ public class UserInterface {
         System.out.println("Total donation amount: $" + totalAmount + " (" + percent + "% of target)");
         String choice;
         if (verbose) {
-            System.out.println("*Enter \"Agg\" to see donations now aggregated by contributor \n" +
+            System.out.println("*Enter \"Donate\" to make a donation to this fund\n" +
+                    "*Enter \"Agg\" to see donations now aggregated by contributor \n" +
                     "*Enter \"Delete\" to delete the fund\n" +
                     "*Enter any other to go back to the listing of funds");
             choice = in.nextLine().trim();
@@ -300,7 +310,8 @@ public class UserInterface {
                 System.out.println("Donation display changed to aggregated");
             }
         } else {
-            System.out.println("*Enter \"Verbose\" to see individual donations \n" +
+            System.out.println("*Enter \"Donate\" to make a donation to this fund\n" +
+                    "*Enter \"Verbose\" to see individual donations \n" +
                     "*Enter \"Delete\" to delete the fund\n" +
                     "*Enter any other to go back to the listing of funds");
             choice = in.nextLine().trim();
@@ -310,6 +321,10 @@ public class UserInterface {
             }
         }
 
+        if (choice.equals("Donate")){
+            makeDonation(fundNumber);
+            displayFund(fundNumber); // after donation is successfully made, again display fund information
+        }
         if (choice.equals("Delete"))
             deleteFund(fundNumber);
 
