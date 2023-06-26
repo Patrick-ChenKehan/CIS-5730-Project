@@ -381,8 +381,12 @@ public class UserInterface {
 
         System.out.println("Please enter new name: (Press enter or leave field blank to just accept current name)");
         String new_name = in.nextLine().trim();
+        if (new_name.isEmpty())
+            new_name = org.getName();
         System.out.println("Please enter new description: (Press enter or leave field blank to just accept current description)");
         String new_description = in.nextLine().trim();
+        if (new_description.isEmpty())
+            new_description = org.getDescription();
 
         try {
             dataManager.updateAccount(org, new_name, new_description);
