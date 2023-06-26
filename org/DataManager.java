@@ -76,7 +76,7 @@ public class DataManager {
 			try {
 				json = (JSONObject) parser.parse(response);
 			} catch (Exception e){
-				throw new IllegalStateException();
+				throw new IllegalStateException("could not check login");
 			}
 			String status = (String)json.get("status");
 
@@ -118,7 +118,7 @@ public class DataManager {
 			try {
 				json = (JSONObject) parser.parse(response);
 			} catch (Exception e){
-				throw new IllegalStateException();
+				throw new IllegalStateException("Could not check check if login input is valid");
 			}
 			String status = (String)json.get("status");
 
@@ -232,7 +232,7 @@ public class DataManager {
 				try {
 					json = (JSONObject) parser.parse(response);
 				} catch (Exception e) {
-					throw new IllegalStateException();
+					throw new IllegalStateException("Could not get the name of the contributor");
 				}
 				String status = (String) json.get("status");
 
@@ -323,7 +323,7 @@ public class DataManager {
 
 		}
 		catch (Exception e) {
-			throw new IllegalStateException(e.getMessage());
+			throw new IllegalStateException("Error deleting fund");
 		}
 	}
 
@@ -331,43 +331,46 @@ public class DataManager {
 	 * This method changes password of org in the database using the /updateOrg endpoint in the API
 	 */
 	public void changePassword(Organization org, String new_password) {
-		if (org.getId() == null || new_password == null || new_password.isEmpty())
+		if (org == null || org.getId() == null || org.getName() == null){
 			throw new IllegalArgumentException("org does not exist");
-
-		try {
-			Map<String, Object> map = new HashMap<>();
-			map.put("id", org.getId());
-			map.put("password", new_password);
-			map.put("name", org.getName());
-			map.put("description", org.getDescription());
-			if (client == null){
-				throw new IllegalStateException("Error while logging in: Webclient is null");
-			}
-			String response = client.makeRequest("/updateOrg", map);
-
-			if (response == null) // Handle failed connection
-				throw new IllegalStateException("Error in communicating with server");
-
-			JSONParser parser = new JSONParser();
-			JSONObject json = (JSONObject) parser.parse(response);
-			String status = (String)json.get("status");
-
-			if (status.equals("error")) {
-				throw new IllegalStateException("Password changing failed. Please try again.");
-			}
-
 		}
-		catch (Exception e) {
-			throw new IllegalStateException(e.getMessage());
+		if (new_password == null || new_password.isEmpty()){
+			throw new IllegalArgumentException("Invalid input: Password");
+		}
+		Map<String, Object> map = new HashMap<>();
+		map.put("id", org.getId());
+		map.put("password", new_password);
+		map.put("name", org.getName());
+		map.put("description", org.getDescription());
+		if (client == null){
+			throw new IllegalStateException("Error while logging in: Webclient is null");
+		}
+		String response = client.makeRequest("/updateOrg", map);
+
+		if (response == null) // Handle failed connection
+			throw new IllegalStateException("Error in communicating with server");
+
+		JSONParser parser = new JSONParser();
+		JSONObject json;
+		try {
+			json = (JSONObject) parser.parse(response);
+		} catch (Exception e) {
+			throw new IllegalStateException("Could not change password");
+		}
+		String status = (String)json.get("status");
+
+		if (status.equals("error")) {
+			throw new IllegalStateException("Password changing failed. Please try again.");
 		}
 
 	}
+
 
 	/**
 	 * This method changes name/description of org in the database using the /updateOrg endpoint in the API
 	 */
 	public void updateAccount(Organization org, String name, String description) {
-		if (org == null) {
+		if (org == null || org.getId() == null || org.getPassword() == null) {
 			throw new IllegalArgumentException("org does not exist");
 		}
 		if (name == null){
@@ -402,7 +405,7 @@ public class DataManager {
 			throw new IllegalStateException("Update failed. Please try again.");
 		}
 
-		}
+	}
 
 
 }

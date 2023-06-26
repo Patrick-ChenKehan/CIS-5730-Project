@@ -14,6 +14,7 @@ public class DataManager_attemptLogin_Test {
      * When writing tests for other methods, be sure to put them into separate
      * JUnit test classes.
      */
+    //DataManagerRobustnessTest that provided in task 2.2 covers rest of code coverage to reach 100%
 
     @Test
     public void testSuccessfulLogin() {

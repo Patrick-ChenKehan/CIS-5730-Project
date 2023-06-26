@@ -151,7 +151,20 @@ public class DataManager_changePassword_Test {
                 return "I AM NOT JSON!";
             }
         });
-        dm.createLogin("jw3", "123", "test", "sse");
-        fail("DataManager.createLogin does not throw IllegalStateException when WebClient is null");
+        dm.changePassword(org, "pass");
+        fail("DataManager.changePassWord does not throw IllegalStateException when WebClient is null");
+    }
+
+
+    @Test (expected = IllegalArgumentException.class)
+    public void test_Illegal_OrgInput() {
+        DataManager dm = new DataManager(new WebClient("localhost", 3001){
+            @Override
+            public String makeRequest(String resource, Map<String, Object> queryParams){
+                return "{\"status\":\"success\",\"data\":{\"_id\":\"jw3\", \"name\":\"test\", \"description\":\"sse\",\"funds\":[]}}";
+            }
+        });
+        Organization org = null;
+        dm.changePassword(org, "pass");
     }
 }

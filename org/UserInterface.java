@@ -32,12 +32,11 @@ public class UserInterface {
             System.out.print("Enter your password: ");
             String password = in.nextLine().trim();
 
-
             try {
                 Organization newOrg = dataManager.attemptLogin(login, password);
-                    org = newOrg;
-                    System.out.println("Login successful.");
-                    loggedIn = true;
+                org = newOrg;
+                System.out.println("Login successful.");
+                loggedIn = true;
             } catch (IllegalArgumentException e) {
                 System.out.println(e.getMessage());
                 System.out.println("Try re-inputing credentials: ");
@@ -64,7 +63,6 @@ public class UserInterface {
             System.out.println("\n\n");
 
             if (org.getFunds().size() > 0) {
-
                 System.out.println("There are " + org.getFunds().size() + " funds in this organization:");
                 int count = 1;
                 for (Fund f : org.getFunds()) {
@@ -96,9 +94,23 @@ public class UserInterface {
             } else if (option == -2) {
                 displayAllContributions();
             } else if (option == -3) {
-                changePassword();
+                while (true) {
+                    try {
+                        changePassword();
+                        break;
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                    }
+                }
             } else if (option == -4) {
-                updateAccount();
+                while (true) {
+                    try {
+                        updateAccount();
+                        break;
+                    } catch (Exception e){
+                        System.out.println(e.getMessage());
+                    }
+                }
             } else {
                 displayFund(option);
             }
@@ -371,7 +383,8 @@ public class UserInterface {
             org.changePassword(new_password_1);
             System.out.println("Password changed successfully");
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
+            throw new IllegalStateException("Error while changing password. Please try again");
         }
 
     }
@@ -403,10 +416,9 @@ public class UserInterface {
             org.changeDescription(new_description);
             System.out.println("Account updated successfully with name: " + org.getName() + " and description: " + org.getDescription());
         } catch (Exception e) {
-            System.out.println("There was an error while updating account");
-            e.getMessage(); // returns message
+            System.out.println(e.getMessage());
+            throw new IllegalStateException("Error while updating Account");
         }
-
     }
 
 
@@ -525,7 +537,6 @@ public class UserInterface {
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("Credentials invalid/unprovided");
         }
-
 
         try {
             if (provide) {

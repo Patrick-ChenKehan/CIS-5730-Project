@@ -261,7 +261,6 @@ public class DataManager_updateAccount_Test {
 
         Organization org = dm.attemptLogin("Patrick", "1999");
         dm.updateAccount(org, "new name", "new description");
-
         fail("DataManager.updateAccount does not throw IllegalStateException when WebClient returns malformed JSON");
     }
 

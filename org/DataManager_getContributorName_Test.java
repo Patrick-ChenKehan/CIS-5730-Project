@@ -6,6 +6,8 @@ import java.util.Map;
 import static org.junit.Assert.*;
 
 public class DataManager_getContributorName_Test {
+
+    //DataManagerRobustnessTest that provided in task 2.2 covers rest of code coverage to reach 100%
     @Test
     public void test1(){
         DataManager dm = new DataManager(new WebClient("localhost", 3001) {
