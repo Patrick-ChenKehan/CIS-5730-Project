@@ -21,82 +21,113 @@ public class DataManager {
 
 
 	public Donation makeDonation(String contributorID, String fundId, long fundAmount){
-		try{
-			Map<String, Object> map = new HashMap<>();
-			map.put("contributor", contributorID);
-			map.put("fund", fundId);
-			map.put("amount", fundAmount);
-			String response = client.makeRequest("/makeDonation", map);
-
-			if (response == null)
-				throw new IllegalStateException("Error in communicating with server");
-
-			JSONParser parser = new JSONParser();
-			JSONObject json = (JSONObject) parser.parse(response);
-			String status = (String)json.get("status");
-
-			if (status.equals("success")){
-				JSONObject donation = (JSONObject)json.get("data");
-				String contributorId = (String)donation.get("contributor");
-				String contributorName = this.getContributorName(contributorId);
-				long amount = (Long)donation.get("amount");
-				String date = (String)donation.get("date");
-				return new Donation(fundId, contributorName, amount, date);
-			}
-			else return null;
-
-		} catch (Exception e){
-			throw new IllegalStateException(e.getMessage());
+		if (contributorID == null){
+			throw new IllegalArgumentException("Invalid input: contributorID was null");
 		}
+		if (fundId == null){
+			throw new IllegalArgumentException("Invalid input: fundId was null");
+		}
+		Map<String, Object> map = new HashMap<>();
+		map.put("contributor", contributorID);
+		map.put("fund", fundId);
+		map.put("amount", fundAmount);
+		if (client == null){
+			throw new IllegalStateException("Error while logging in: Webclient is null");
+		}
+		String response = client.makeRequest("/makeDonation", map);
+		if (response == null)
+			throw new IllegalStateException("Error in communicating with server");
+
+		JSONParser parser = new JSONParser();
+		JSONObject json;
+		try {
+			json = (JSONObject) parser.parse(response);
+		} catch (Exception e){
+			throw new IllegalStateException();
+		}
+		String status = (String)json.get("status");
+
+		if (status.equals("success")){
+			JSONObject donation = (JSONObject)json.get("data");
+			String contributorId = (String)donation.get("contributor");
+			String contributorName = this.getContributorName(contributorId);
+			long amount = (Long)donation.get("amount");
+			String date = (String)donation.get("date");
+			return new Donation(fundId, contributorName, amount, date);
+		}
+		else throw new IllegalStateException("Failed to Make Donation. Please try again.");
 	}
 
 
 	public boolean checkLogin(String login){
-		try{
+			if (login == null){
+				throw new IllegalArgumentException("Invalid Input: Null Login");
+			}
 			Map<String, Object> map = new HashMap<>();
 			map.put("login", login);
+			if (client == null){
+				throw new IllegalStateException("Error while logging in: Webclient is null");
+			}
 			String response = client.makeRequest("/findOrgByLogin", map);
 			if (response == null)
 				throw new IllegalStateException("Error in communicating with server");
 			JSONParser parser = new JSONParser();
-			JSONObject json = (JSONObject) parser.parse(response);
+			JSONObject json;
+			try {
+				json = (JSONObject) parser.parse(response);
+			} catch (Exception e){
+				throw new IllegalStateException();
+			}
 			String status = (String)json.get("status");
 
 			if (status.equals("success")){
 				return true;
 			}
 			else return false;
-		}catch(Exception e){
-			throw new IllegalStateException(e.getMessage());
-		}
 	}
 
 
 	public Organization createLogin(String login, String password, String name, String description){
-		try{
+			if (login == null){
+				throw new IllegalArgumentException("Invalid Input: Null Login");
+			}
+			if (password == null){
+				throw new IllegalArgumentException("Invalid Input: Null Password");
+			}
+			if (name == null){
+				throw new IllegalArgumentException("Invalid Input: Null name");
+			}
+			if (description == null){
+				throw new IllegalArgumentException("Invalid Input: Null description");
+			}
 			Map<String, Object> map = new HashMap<>();
 			map.put("login", login);
 			map.put("password", password);
 			map.put("name", name);
 			map.put("description", description);
+			if (client == null){
+				throw new IllegalStateException("Error while logging in: Webclient is null");
+			}
 			String response = client.makeRequest("/createOrg", map);
 
 			if (response == null)
 				throw new IllegalStateException("Error in communicating with server");
 
 			JSONParser parser = new JSONParser();
-			JSONObject json = (JSONObject) parser.parse(response);
+			JSONObject json;
+			try {
+				json = (JSONObject) parser.parse(response);
+			} catch (Exception e){
+				throw new IllegalStateException();
+			}
 			String status = (String)json.get("status");
 
 			if (status.equals("success")){
 				return attemptLogin(login, password);
 			}
-			else return null;
+			else throw new IllegalStateException("Failed to create Login. Please try again.");
 
 
-		}catch(Exception e){
-			throw new IllegalStateException(e.getMessage());
-		}
 	}
 
 	/**
@@ -189,7 +220,6 @@ public class DataManager {
 
 				Map<String, Object> map = new HashMap<>();
 				map.put("id", id);
-
 				if (client == null){
 					throw new IllegalStateException("Error: Webclient is null");
 				}
@@ -210,7 +240,7 @@ public class DataManager {
 					String name = (String) json.get("data");
 					results.put(id, name);
 					return name;
-				} else throw new IllegalStateException("Failed getting contributer. WebClient returns null");
+				} else throw new IllegalStateException("Failed getting contributor. WebClient returns null");
 
 
 			}
@@ -310,6 +340,9 @@ public class DataManager {
 			map.put("password", new_password);
 			map.put("name", org.getName());
 			map.put("description", org.getDescription());
+			if (client == null){
+				throw new IllegalStateException("Error while logging in: Webclient is null");
+			}
 			String response = client.makeRequest("/updateOrg", map);
 
 			if (response == null) // Handle failed connection
@@ -334,33 +367,42 @@ public class DataManager {
 	 * This method changes name/description of org in the database using the /updateOrg endpoint in the API
 	 */
 	public void updateAccount(Organization org, String name, String description) {
-		if (org.getId() == null || name == null || description == null)
+		if (org == null) {
 			throw new IllegalArgumentException("org does not exist");
+		}
+		if (name == null){
+			throw new IllegalArgumentException("Invalid Input: Null Name");
+		}
+		if (description == null){
+			throw new IllegalArgumentException("Invalid Input: Null DEscription");
+		}
+		Map<String, Object> map = new HashMap<>();
+		map.put("id", org.getId());
+		map.put("password", org.getPassword());
+		map.put("name", name);
+		map.put("description", description);
+		if (client == null){
+			throw new IllegalStateException("Error while logging in: Webclient is null");
+		}
+		String response = client.makeRequest("/updateOrg", map);
 
+		if (response == null) // Handle failed connection
+			throw new IllegalStateException("Error in communicating with server");
+
+		JSONParser parser = new JSONParser();
+		JSONObject json;
 		try {
-			Map<String, Object> map = new HashMap<>();
-			map.put("id", org.getId());
-			map.put("password", org.getPassword());
-			map.put("name", name);
-			map.put("description", description);
-			String response = client.makeRequest("/updateOrg", map);
-
-			if (response == null) // Handle failed connection
-				throw new IllegalStateException("Error in communicating with server");
-
-			JSONParser parser = new JSONParser();
-			JSONObject json = (JSONObject) parser.parse(response);
-			String status = (String)json.get("status");
-
-			if (status.equals("error")) {
-				throw new IllegalStateException("Update failed. Please try again.");
-			}
-
+			json = (JSONObject) parser.parse(response);
+		} catch (Exception e) {
+			throw new IllegalStateException("Error: Could not update account");
 		}
-		catch (Exception e) {
-			throw new IllegalStateException(e.getMessage());
+		String status = (String)json.get("status");
+
+		if (status.equals("error")) {
+			throw new IllegalStateException("Update failed. Please try again.");
 		}
 
-	}
+		}
+
 
 }

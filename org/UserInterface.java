@@ -146,15 +146,15 @@ public class UserInterface {
             System.out.print("ContributorID cannot be null. Please re-enter: ");
             contributorID = in.nextLine().trim();
         }
+
         try {
             String contributorName = dataManager.getContributorName(contributorID);
             if (contributorName == null){
-                System.out.println("No contributor was found with this ID. Please try making donation again:");
-                makeDonation(fundNumber);
+                throw new IllegalStateException("No contributor was found with this ID. Please try making donation again:");
             }
         } catch (Exception e){
-            System.out.println("No contributor was found with this ID. Please try making donation again:");
-            makeDonation(fundNumber);
+            System.out.println("intercept");
+            throw new IllegalStateException("No contributor was found with this ID. Please try making donation again:");
         }
 
         System.out.print("Please enter the donation amount: ");
@@ -169,9 +169,8 @@ public class UserInterface {
         try {
             donation = dataManager.makeDonation(contributorID, org.getFunds().get(fundNumber - 1).getId(), donationAmount);
         } catch (Exception e){
-            System.out.println(e.getMessage());
-            System.out.println("Error: Please try to make donation again: ");
-            makeDonation(fundNumber);
+            System.out.println(e.getMessage()); // gets my descriptive message from thrown exception
+            throw new IllegalStateException("Please try to make donation again: ");
         }
         List<Donation> allDonations = org.getFunds().get(fundNumber - 1).getDonations();
         allDonations.add(donation);
@@ -257,12 +256,10 @@ public class UserInterface {
         if (verbose) { // If in verbose mode
             donations.sort(Comparator.comparing(Donation::getAmount).reversed());
             for (Donation donation : donations) {
-                //donations.sort((d1, d2) -> (int) d2.getAmount() - (int) d1.getAmount()); // Sort donations in descending order
                 String origDate = donation.getDate();
                 String year = origDate.substring(0, 4).trim();
                 String month = origDate.substring(5, 7).trim();
                 String date = origDate.substring(8, 10).trim();
-                // task 1.9
                 month = dateConversion.get(month);
                 if (month == null){
                     month = "Invalid month";
@@ -322,8 +319,15 @@ public class UserInterface {
             }
         }
 
-        if (choice.equals("Donate")){
-            makeDonation(fundNumber);
+        if (choice.equals("Donate")) {
+            while (true) {
+                try {
+                    makeDonation(fundNumber);
+                    break;
+                } catch (Exception e) {
+                    System.out.println("Error while donating; try again: ");
+                }
+            }
             displayFund(fundNumber); // after donation is successfully made, again display fund information
         }
         if (choice.equals("Delete"))
@@ -375,9 +379,9 @@ public class UserInterface {
             return;
         }
 
-        System.out.println("Please enter new name:");
+        System.out.println("Please enter new name: (Press enter or leave field blank to just accept current name)");
         String new_name = in.nextLine().trim();
-        System.out.println("Please enter new description: ");
+        System.out.println("Please enter new description: (Press enter or leave field blank to just accept current description)");
         String new_description = in.nextLine().trim();
 
         try {
@@ -469,7 +473,7 @@ public class UserInterface {
                     }
 
                     if (ds.checkLogin(newLogin)){
-                        System.out.println("Login already exist");
+                        System.out.println("This login already exists");
                         continue;
                     }
 
@@ -488,7 +492,7 @@ public class UserInterface {
                     }
                 }
             }else{
-                System.out.println("Invalid.");
+                System.out.println("Login failed. Please try again.");
             }
         }
     }
@@ -511,9 +515,15 @@ public class UserInterface {
 
         try {
             if (provide) {
-                Organization org = ds.attemptLogin(login, password);
+                Organization org = null;
+                try {
+                    org = ds.attemptLogin(login, password);
+                } catch (Exception e){
+                    System.out.println(e.getMessage());
+                    System.out.println("Please try logging in again.");
+                    provide = false;
+                }
                 if (org == null) {
-                    System.out.println("Login fails");
                     provide = false;
                 } else {
                     UserInterface ui = new UserInterface(ds, org);
