@@ -19,7 +19,6 @@ public class UserInterface {
         org = null; // Reset the organization
         System.out.println("Logged out successfully.");
         System.out.println("Please log in to continue.");
-        //login();
         caseNoCredit(dataManager);
     }
 
@@ -153,7 +152,6 @@ public class UserInterface {
                 throw new IllegalStateException("No contributor was found with this ID. Please try making donation again:");
             }
         } catch (Exception e){
-            System.out.println("intercept");
             throw new IllegalStateException("No contributor was found with this ID. Please try making donation again:");
         }
 
@@ -330,9 +328,16 @@ public class UserInterface {
             }
             displayFund(fundNumber); // after donation is successfully made, again display fund information
         }
-        if (choice.equals("Delete"))
-            deleteFund(fundNumber);
-
+        if (choice.equals("Delete")) {
+            while (true) {
+                try {
+                    deleteFund(fundNumber);
+                    break;
+                } catch (Exception e) {
+                    System.out.println("Error while deleting; try again: ");
+                }
+            }
+        }
     }
 
     public void changePassword() {
@@ -381,20 +386,25 @@ public class UserInterface {
 
         System.out.println("Please enter new name: (Press enter or leave field blank to just accept current name)");
         String new_name = in.nextLine().trim();
-        if (new_name.isEmpty())
-            new_name = org.getName();
         System.out.println("Please enter new description: (Press enter or leave field blank to just accept current description)");
         String new_description = in.nextLine().trim();
+        if (new_name.isEmpty() && new_description.isEmpty()){
+            System.out.println("No Changes were made!");
+            System.out.println("Name is still: " + org.getName() + " and description: " + org.getDescription());
+            return;
+        }
+        if (new_name.isEmpty())
+            new_name = org.getName();
         if (new_description.isEmpty())
             new_description = org.getDescription();
-
         try {
             dataManager.updateAccount(org, new_name, new_description);
             org.changeName(new_name);
             org.changeDescription(new_description);
-            System.out.println("Account updated successfully");
+            System.out.println("Account updated successfully with name: " + org.getName() + " and description: " + org.getDescription());
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("There was an error while updating account");
+            e.getMessage(); // returns message
         }
 
     }
