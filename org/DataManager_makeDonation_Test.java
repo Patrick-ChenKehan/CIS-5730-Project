@@ -32,8 +32,42 @@ public class DataManager_makeDonation_Test {
         assertNotNull(donation);
         assertEquals(40, donation.getAmount());
         assertEquals("wj", donation.getContributorName());
-       // assertEquals("", donation.getFundId());
+        assertEquals("64990c3a1202ad4a87f3a85", donation.getFundId());
         assertEquals("2023-06-26T04:03:57.997Z", donation.getDate());
+
     }
 
+    @Test(expected=IllegalStateException.class)
+    public void testException() {
+
+        DataManager dm = new DataManager(new WebClient("localhost", 3001) {
+
+            @Override
+            public String makeRequest(String resource, Map<String, Object> queryParams) {
+                return null;
+
+            }
+
+        });
+
+
+        Donation donation = dm.makeDonation("649873aaf59da441a42c1de1", "64990c3a1202ad4a87f3a85", 40);
+        assertNull(donation);
+    }
+
+    @Test
+    public void testFailure() {
+
+        DataManager dm = new DataManager(new WebClient("localhost", 3001) {
+
+            @Override
+            public String makeRequest(String resource, Map<String, Object> queryParams) {
+                return "{\"status\":\"error\",\"data\":{\"_id\":\"MongoError\"}}";
+            }
+
+        });
+
+        Donation donation = dm.makeDonation("649873aaf59da441a42c1de1", "64990c3a1202ad4a87f3a85", 40);
+        assertNull(donation);
+    }
 }
