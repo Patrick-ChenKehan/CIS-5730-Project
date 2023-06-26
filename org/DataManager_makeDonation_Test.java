@@ -38,7 +38,7 @@ public class DataManager_makeDonation_Test {
     }
 
     @Test(expected=IllegalStateException.class)
-    public void testException() {
+    public void testMakeDonation_ExceptionNull() {
 
         DataManager dm = new DataManager(new WebClient("localhost", 3001) {
 
@@ -55,8 +55,73 @@ public class DataManager_makeDonation_Test {
         assertNull(donation);
     }
 
-    @Test
-    public void testFailure() {
+    // defensive programming tests (tests similar to RobustnessTest from Task 2.2)
+    @Test(expected=IllegalStateException.class)
+    public void testMakeDonation_WebClientReturnsMalformedJSON() {
+
+        DataManager dm = new DataManager(new WebClient("localhost", 3001) {
+            @Override
+            public String makeRequest(String resource, Map<String, Object> queryParams) {
+                return "I AM NOT JSON!";
+            }
+        });
+        dm.makeDonation("649873aaf59da441a42c1de1", "64990c3a1202ad4a87f3a85", 40);
+        fail("DataManager.makeDonation does not throw IllegalStateException when WebClient returns malformed JSON");
+    }
+
+    @Test(expected=IllegalStateException.class)
+    public void testMakeDonation_WebClientIsNull() {
+
+        DataManager dm = new DataManager(null);
+        dm.makeDonation("649873aaf59da441a42c1de1", "64990c3a1202ad4a87f3a85", 40);
+        fail("DataManager.makeDonation does not throw IllegalStateException when WebClient is null");
+
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testMakeDonation_ContributorIdIsNull() {
+
+        DataManager dm = new DataManager(new WebClient("localhost", 3001));
+        dm.makeDonation(null, "64990c3a1202ad4a87f3a85", 40);
+        fail("DataManager.makeDonation does not throw IllegalArgumentxception when contributorId is null");
+
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testMakeDonation_fundIdIsNull() {
+
+        DataManager dm = new DataManager(new WebClient("localhost", 3001));
+        dm.makeDonation("649873aaf59da441a42c1de1", null, 40);
+        fail("DataManager.makeDonation does not throw IllegalArgumentxception when fundId is null");
+
+    }
+
+    // this assumes no server is running on port 3002
+    @Test(expected=IllegalStateException.class)
+    public void testMakeDonation_WebClientCannotConnectToServer() {
+
+        DataManager dm = new DataManager(new WebClient("localhost", 3002));
+        dm.makeDonation("649873aaf59da441a42c1de1", "64990c3a1202ad4a87f3a85", 40);
+        fail("DataManager.makeDonation does not throw IllegalStateException when WebClient cannot connect to server");
+
+    }
+
+    @Test(expected=IllegalStateException.class)
+    public void testMakeDonation_WebClientReturnsError() {
+
+        DataManager dm = new DataManager(new WebClient("localhost", 3001) {
+            @Override
+            public String makeRequest(String resource, Map<String, Object> queryParams) {
+                return "{\"status\":\"error\",\"error\":\"An unexpected database error occurred\"}";
+            }
+        });
+        dm.makeDonation("649873aaf59da441a42c1de1", "64990c3a1202ad4a87f3a85", 40);
+        fail("DataManager.makeDonation does not throw IllegalStateException when WebClient returns error");
+
+    }
+
+    @Test(expected=IllegalStateException.class)
+    public void testMakeDonation_FailureError() {
 
         DataManager dm = new DataManager(new WebClient("localhost", 3001) {
 
@@ -67,7 +132,9 @@ public class DataManager_makeDonation_Test {
 
         });
 
-        Donation donation = dm.makeDonation("649873aaf59da441a42c1de1", "64990c3a1202ad4a87f3a85", 40);
-        assertNull(donation);
+        dm.makeDonation("649873aaf59da441a42c1de1", "64990c3a1202ad4a87f3a85", 40);
+        fail("DataManager.makeDonation does not throw IllegalStateException when WebClient returns error");
     }
+
+
 }
