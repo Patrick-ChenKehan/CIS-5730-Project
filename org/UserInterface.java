@@ -206,8 +206,7 @@ public class UserInterface {
                 org.deleteFund(fundNumber);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
-                System.out.println("There was a problem with deletion. Press y to try deleting again " +
-                        "or else press n to return to main menu");
+                System.out.println("There was a problem with deletion.");
             }
         }
     }
@@ -497,13 +496,11 @@ public class UserInterface {
                             System.out.println("Could not be blank");
                         }
                     }
-
-                    if (ds.checkLogin(newLogin)){
-                        System.out.println("This login already exists");
-                        continue;
-                    }
-
                     try{
+                        if (ds.checkLogin(newLogin)){
+                            System.out.println("This login already exists");
+                            continue;
+                        }
                         Organization org = ds.createLogin(newLogin, newPassword, orgName, orgDescription);
                         if (org == null) {
                             System.out.println("Login fails.");
